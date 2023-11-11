@@ -4,6 +4,7 @@ using BiddingSystem.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BiddingSystem.Migrations
 {
     [DbContext(typeof(BiddingSystemContext))]
-    partial class BiddingSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20231110163710_LittleChanges")]
+    partial class LittleChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace BiddingSystem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BiddingSystem.Models.Auction", b =>
+            modelBuilder.Entity("BiddingSystemBackEnd.Models.Auction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,7 +52,7 @@ namespace BiddingSystem.Migrations
                     b.ToTable("Auctions");
                 });
 
-            modelBuilder.Entity("BiddingSystem.Models.Bidding", b =>
+            modelBuilder.Entity("BiddingSystemBackEnd.Models.Bidding", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +78,7 @@ namespace BiddingSystem.Migrations
                     b.ToTable("Biddings");
                 });
 
-            modelBuilder.Entity("BiddingSystem.Models.Item", b =>
+            modelBuilder.Entity("BiddingSystemBackEnd.Models.Item", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,7 +124,7 @@ namespace BiddingSystem.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BiddingSystem.Models.User", b =>
+            modelBuilder.Entity("BiddingSystemBackEnd.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -169,9 +172,9 @@ namespace BiddingSystem.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BiddingSystem.Models.Auction", b =>
+            modelBuilder.Entity("BiddingSystemBackEnd.Models.Auction", b =>
                 {
-                    b.HasOne("BiddingSystem.Models.Item", "Item")
+                    b.HasOne("BiddingSystemBackEnd.Models.Item", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -180,27 +183,27 @@ namespace BiddingSystem.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("BiddingSystem.Models.Bidding", b =>
+            modelBuilder.Entity("BiddingSystemBackEnd.Models.Bidding", b =>
                 {
-                    b.HasOne("BiddingSystem.Models.Auction", null)
+                    b.HasOne("BiddingSystemBackEnd.Models.Auction", null)
                         .WithMany("Biddings")
                         .HasForeignKey("AuctionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BiddingSystem.Models.User", null)
+                    b.HasOne("BiddingSystemBackEnd.Models.User", null)
                         .WithMany("Biddings")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BiddingSystem.Models.Auction", b =>
+            modelBuilder.Entity("BiddingSystemBackEnd.Models.Auction", b =>
                 {
                     b.Navigation("Biddings");
                 });
 
-            modelBuilder.Entity("BiddingSystem.Models.User", b =>
+            modelBuilder.Entity("BiddingSystemBackEnd.Models.User", b =>
                 {
                     b.Navigation("Biddings");
                 });

@@ -3393,11 +3393,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\projects\\SocialMedia\\BiddingSystem\\BiddingSystem\\BiddingSystem.csproj",
-      "projectName": "BiddingSystem",
-      "projectPath": "C:\\projects\\SocialMedia\\BiddingSystem\\BiddingSystem\\BiddingSystem.csproj",
+      "projectUniqueName": "C:\\projects\\SocialMedia\\BiddingSystem\\BiddingSystemBackEnd\\BiddingSystemBackEnd.csproj",
+      "projectName": "BiddingSystemBackEnd",
+      "projectPath": "C:\\projects\\SocialMedia\\BiddingSystem\\BiddingSystemBackEnd\\BiddingSystemBackEnd.csproj",
       "packagesPath": "C:\\Users\\avlad\\.nuget\\packages\\",
-      "outputPath": "C:\\projects\\SocialMedia\\BiddingSystem\\BiddingSystem\\obj\\",
+      "outputPath": "C:\\projects\\SocialMedia\\BiddingSystem\\BiddingSystemBackEnd\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\avlad\\AppData\\Roaming\\NuGet\\NuGet.Config"

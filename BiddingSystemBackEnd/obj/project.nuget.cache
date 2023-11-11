@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/C2bsz53hJhWKExigoAHni7YmWpfQ+GzYxfh0Pr1CWuV2+0pqKVQ02fxquZwvJ70j1QR6oQYABELQubPA8FGfw==",
+  "dgSpecHash": "t4Au6v9tASVB1+e+1vC8c/FzsiylEggD0Mq3I71HcKLFoYyRNQMx92YzOCEaDgrwzvDZi2hhq6eQvYEmfTraxw==",
   "success": true,
-  "projectFilePath": "C:\\projects\\SocialMedia\\BiddingSystem\\BiddingSystem\\BiddingSystem.csproj",
+  "projectFilePath": "C:\\projects\\SocialMedia\\BiddingSystem\\BiddingSystemBackEnd\\BiddingSystemBackEnd.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\avlad\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\avlad\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",
