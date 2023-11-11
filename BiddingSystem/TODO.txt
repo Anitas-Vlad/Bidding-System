@@ -1,0 +1,16 @@
+TODO : 
+* Users have : amount of money in account. They can add more if needed.
+* You can only bid for something you can afford.
+* Cancel Bidding.
+* Add a property for Bidding : Bidding.IsActive. This way you can create a bidding and TODO Snipe.
+
+MUST : 
+* Authorisation for creating Auctions.
+* Authorisation 
+
+DONE : 
+* appsettings.json stuff.
+* Users : Login, Authentication, Authorisation
+* Add ItemService where you handle changes related to Items.
+* In BiddingService Validate : CreateBidding :
+* Find out why and fix PlaceBidding
