@@ -14,3 +14,5 @@ DONE :
 * Add ItemService where you handle changes related to Items.
 * In BiddingService Validate : CreateBidding :
 * Find out why and fix PlaceBidding
+
+TestLine
