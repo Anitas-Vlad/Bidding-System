@@ -8,4 +8,8 @@ public class Bidding
     [Required] public double Amount { get; set; }
     [Required] public int UserId { get; set; }
     [Required] public int AuctionId { get; set; }
+
+    public void UpdateAmount(double newAmount) => Amount = newAmount;
+
+    public double getDifferenceBetweenOldAndNewAmount(double newAmount) => newAmount - Amount;
 }

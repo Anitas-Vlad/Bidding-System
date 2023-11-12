@@ -1,11 +1,12 @@
 TODO : 
 * Users have : amount of money in account. They can add more if needed.
-* You can only bid for something you can afford.
-* Cancel Bidding.
+    ===> You can only bid for something you can afford.
 * Add a property for Bidding : Bidding.IsActive. This way you can create a bidding and TODO Snipe.
+* Create class UserValidator (IsEmailValid / IsPasswordValid / etc...)
+* Unfreeze User.Credit when canceling a bidding.
+TODO !!! Create Migration
 
 MUST : 
-* Authorisation for creating Auctions.
 * Authorisation 
 
 DONE : 
@@ -14,5 +15,8 @@ DONE :
 * Add ItemService where you handle changes related to Items.
 * In BiddingService Validate : CreateBidding :
 * Find out why and fix PlaceBidding
-
-TestLine
+* Cancel Bidding.
+* Minimum Bid Increment
+* When placing another bidding, you check the user's money and the previous bidding amount if it's enough. CheckIfHasEnough(amount){return amount<previousBidding+Added(IF THE USER HAS ENOUGH TO BID MORE.)}
+* Freeze money so the user can't use too much.
+TODO NeededAmount = NewAmount - OldAmount ===> Money MUST= NeededAmount => Bidding.amount += NeededAmount 

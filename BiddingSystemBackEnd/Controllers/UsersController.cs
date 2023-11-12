@@ -1,4 +1,5 @@
 ﻿using BiddingSystem.Models;
+using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,4 +21,9 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<User>>> GetAllUsers() 
         => await _usersService.QueryAllUsers();
+
+    [HttpPatch]
+    [Route("/AddCredit")]
+    public async Task<ActionResult<double>> AddCreditToUser(AddCreditRequest request) 
+        => await _usersService.AddCredit(request);
 }

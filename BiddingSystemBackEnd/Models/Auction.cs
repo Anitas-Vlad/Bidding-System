@@ -8,6 +8,7 @@ public class Auction
     [Required] public Item Item { get; set; }
     [Required] public DateTime EndOfAuction { get; set; }
     public double CurrentPrice { get; set; }
+    [Required] public double MinimumBidIncrement { get; set; }
     public List<Bidding> Biddings { get; set; } = new();
     public int? WinningBiddingId { get; set; }
 
@@ -18,6 +19,11 @@ public class Auction
         CurrentPrice = bidding.Amount;
     }
 
+    private double MinimumBiddingAmount() => CurrentPrice + MinimumBidIncrement;
+    
+    public bool IsBiddingAmountValid(double amount) =>
+        amount > MinimumBiddingAmount();
+    
     public void RemoveBidding(Bidding bidding)
     {
         Biddings.Remove(bidding);
@@ -39,4 +45,7 @@ public class Auction
             CurrentPrice = secondHighestBidding.Amount;
         }
     }
+
+    public Bidding? GetBiddingByUserId(int userId) 
+        => Biddings.SingleOrDefault(bidding => bidding.UserId == userId);
 }

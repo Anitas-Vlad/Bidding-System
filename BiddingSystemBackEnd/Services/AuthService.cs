@@ -34,7 +34,7 @@ public class AuthService : IAuthService
         return token;
     }
 
-    public string CreateToken(User user)
+    private string CreateToken(User user)
     {
         var claims = new List<Claim>
         {

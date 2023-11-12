@@ -61,6 +61,15 @@ public class UsersService : IUsersService
         return user;
     }
 
+    public async Task<double> AddCredit(AddCreditRequest request)
+    {
+        var user = await QueryUserById(request.UserId);
+        user.AddCredit(request.Amount);
+        _context.Update(user);
+        await _context.SaveChangesAsync();
+        return user.Credit;
+    } 
+
     private async Task IsEmailValid(string userEmail)
     {
         if (!_mailPattern.IsMatch(userEmail))

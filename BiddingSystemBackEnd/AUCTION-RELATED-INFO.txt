@@ -1,0 +1,31 @@
+﻿TODO Ascending Bids:
+
+    In a standard auction, participants typically place bids that are equal to or higher than the 
+current highest bid.
+    The bid amount represents the amount a bidder is willing to pay for the item.
+
+
+TODO Minimum Bid Increment
+    
+    To ensure a fair and transparent bidding process, online auction platforms often set 
+a minimum bid increment.
+    Bidders must place bids that exceed the current highest bid by at least the minimum
+bid increment.
+
+
+TODO Proxy Bidding:
+    
+    Some auction platforms use a proxy bidding system. In this system, a bidder can enter the maximum amount they are willing to pay for an item.
+The system automatically increases the bid on behalf of the bidder in predefined increments, up to the maximum amount specified.
+
+
+TODO Reserve Price:
+    
+    A reserve price is the minimum amount a seller is willing to accept for an item.
+If the highest bid does not meet or exceed the reserve price, the item may not be sold.
+
+
+TODO Buyer's Premium:
+    
+    In some auctions, a buyer's premium is added to the final bid amount. 
+This is an additional percentage of the final bid that the winning bidder must pay.

@@ -22,7 +22,7 @@ public class BiddingService : IBiddingService
         return bidding;
     }
 
-    public async Task<Bidding> CreateBidding(CreateBiddingRequest request)
+    public Bidding ConstructBidding(CreateBiddingRequest request)
     {
         var bidding = new Bidding
         {
@@ -30,9 +30,6 @@ public class BiddingService : IBiddingService
             UserId = request.UserId,
             AuctionId = request.AuctionId
         };
-
-        _context.Biddings.Add(bidding);
-        await _context.SaveChangesAsync();
 
         return bidding;
     }
