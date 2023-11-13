@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BiddingSystem.Models;
 
@@ -9,43 +10,49 @@ public class Auction
     [Required] public DateTime EndOfAuction { get; set; }
     public double CurrentPrice { get; set; }
     [Required] public double MinimumBidIncrement { get; set; }
-    public List<Bidding> Biddings { get; set; } = new();
-    public int? WinningBiddingId { get; set; }
+    public List<Bid> Bids { get; set; } = new();
+    public int? WinningBidId { get; set; }
 
-    public void AddBidding(Bidding bidding)
+    public void AddBid(Bid bid)
     {
-        Biddings.Add(bidding);
-        WinningBiddingId = bidding.Id;
-        CurrentPrice = bidding.Amount;
+        Bids.Add(bid);
+        WinningBidId = bid.Id;
+        CurrentPrice = bid.Amount;
     }
 
-    private double MinimumBiddingAmount() => CurrentPrice + MinimumBidIncrement;
-    
-    public bool IsBiddingAmountValid(double amount) =>
-        amount > MinimumBiddingAmount();
-    
-    public void RemoveBidding(Bidding bidding)
+    private double MinimumBidAmount()
     {
-        Biddings.Remove(bidding);
-        SetNewHighestBidding();
-    }
-
-    private void SetNewHighestBidding()
-    {
-        var secondHighestBidding = Biddings.MaxBy(bidding => bidding.Amount);
+        if (!Bids.Any())
+            return CurrentPrice;
         
-        if (secondHighestBidding == null)
+        return CurrentPrice + MinimumBidIncrement;
+    }
+
+    public bool IsBidAmountValid(double amount) =>
+        amount >= MinimumBidAmount();
+    
+    public void RemoveBid(Bid bid)
+    {
+        Bids.Remove(bid);
+        SetNewHighestBid();
+    }
+
+    private void SetNewHighestBid()
+    {
+        var secondHighestBid = Bids.MaxBy(bid => bid.Amount);
+        
+        if (secondHighestBid == null)
         {
-            WinningBiddingId = null;
+            WinningBidId = null;
             CurrentPrice = Item.StartingPrice;
         }
         else
         {
-            WinningBiddingId = secondHighestBidding.Id;
-            CurrentPrice = secondHighestBidding.Amount;
+            WinningBidId = secondHighestBid.Id;
+            CurrentPrice = secondHighestBid.Amount;
         }
     }
 
-    public Bidding? GetBiddingByUserId(int userId) 
-        => Biddings.SingleOrDefault(bidding => bidding.UserId == userId);
+    public Bid? GetBidByUserId(int userId) 
+        => Bids.SingleOrDefault(bid => bid.UserId == userId);
 }

@@ -16,7 +16,7 @@ public class ItemsController : ControllerBase
     }
 
     [HttpGet]
-    [Route("/{itemId}")]
+    [Route("/item-{itemId}")]
     public async Task<ActionResult<Item>> GetItemById(int itemId)
         => await _itemsService.QueryItemById(itemId);
 

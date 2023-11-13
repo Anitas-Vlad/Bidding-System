@@ -23,7 +23,7 @@ public class UsersService : IUsersService
     public async Task<User> QueryUserById(int userId)
     {
         var user = await _context.Users
-            .Include(user => user.Biddings)
+            .Include(user => user.Bids)
             .Where(user => user.Id == userId)
             .FirstOrDefaultAsync();
 
@@ -33,11 +33,11 @@ public class UsersService : IUsersService
     }
 
     public Task<List<User>> QueryAllUsers() =>
-        _context.Users.Include(user => user.Biddings).ToListAsync();
+        _context.Users.Include(user => user.Bids).ToListAsync();
 
     public async Task<User?> QueryUserByEmail(string userEmail)
         => await _context.Users
-            .Include(user => user.Biddings)
+            .Include(user => user.Bids)
             .Where(user => user.Email == userEmail)
             .FirstOrDefaultAsync();
 

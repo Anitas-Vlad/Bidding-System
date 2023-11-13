@@ -8,17 +8,16 @@ public class User
     [Required] public string UserName { get; set; }
     [Required] public string PasswordHash { get; set; }
     [Required] public string Email { get; set; }
-    [Required] public List<Bidding> Biddings { get; set; } = new();
+    [Required] public List<Bid> Bids { get; set; } = new();
     public double Credit { get; set; } = 0;
     public double FrozenCredit { get; set; } = 0;
 
-    public void RemoveBidding(Bidding bidding)
-        => Biddings.Remove(bidding);
+    public void RemoveBid(Bid bid)
+        => Bids.Remove(bid);
 
-    public void AddBidding(Bidding bidding)
-        => Biddings.Add(bidding);
+    public void AddBid(Bid bid)
+        => Bids.Add(bid);
 
-    // TODO This will get more complicated when adding the FrozenMoney Implementation
     public bool HasEnoughCredit(double amount) => Credit > amount;
     public void AddCredit(double amount) => Credit += amount;
 

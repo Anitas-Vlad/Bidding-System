@@ -1,8 +1,8 @@
 {
   "Version": 1,
-  "Hash": "m3wteWUpiAMQf34x9Jjc1RbVsYLc7CMRgPy7DtnCsH8=",
-  "Source": "BiddingSystem",
-  "BasePath": "_content/BiddingSystem",
+  "Hash": "HEevEUE7AchXhWxFBuZKawTr/oZx9kBR/TtNrUXQc2w=",
+  "Source": "BiddingSystemBackEnd",
+  "BasePath": "_content/BiddingSystemBackEnd",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],

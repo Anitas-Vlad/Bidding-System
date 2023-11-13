@@ -15,16 +15,16 @@ public class BiddingService : IBiddingService
         _context = context;
     }
 
-    public async Task<Bidding> QueryBiddingById(int biddingId)
+    public async Task<Bid> QueryBidById(int bidId)
     {
-        var bidding = await _context.Biddings.SingleOrDefaultAsync(bidding => bidding.Id == biddingId);
+        var bidding = await _context.Bids.SingleOrDefaultAsync(bidding => bidding.Id == bidId);
         if (bidding == null) throw new ArgumentException("Bidding not found.");
         return bidding;
     }
 
-    public Bidding ConstructBidding(CreateBiddingRequest request)
+    public Bid ConstructBid(CreateBiddingRequest request)
     {
-        var bidding = new Bidding
+        var bidding = new Bid
         {
             Amount = request.Amount,
             UserId = request.UserId,

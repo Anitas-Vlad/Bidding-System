@@ -17,7 +17,7 @@ public class BiddingSystemContext : DbContext
     public DbSet<User> Users { get; set; } = default!;
     public DbSet<Auction> Auctions { get; set; } = default!;
     public DbSet<Item> Items { get; set; } = default!;
-    public DbSet<Bidding> Biddings { get; set; } = default!;
+    public DbSet<Bid> Bids { get; set; } = default!;
 
     private static class ModelBuilderExtensions
     {
@@ -46,6 +46,7 @@ public class BiddingSystemContext : DbContext
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Ccccc123."),
                 }
             );
+
             modelBuilder.Entity<Item>().HasData(
             
                 new Item

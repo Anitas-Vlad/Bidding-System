@@ -14,7 +14,7 @@ public class UsersController : ControllerBase
     public UsersController(IUsersService usersService) => _usersService = usersService;
 
     [HttpGet]
-    [Route("/{userId}")]
+    [Route("/user-{userId}")]
     public async Task<ActionResult<User>> GetUserById(int userId) 
         => await _usersService.QueryUserById(userId);
 

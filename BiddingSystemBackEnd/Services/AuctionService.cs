@@ -11,7 +11,7 @@ public class AuctionService : IAuctionService
     private readonly BiddingSystemContext _context;
     private readonly IItemService _itemService;
     private readonly IBiddingService _biddingService;
-    private IUsersService _userService;
+    private readonly IUsersService _userService;
 
     public AuctionService(BiddingSystemContext context, IItemService itemService, IBiddingService biddingService,
         IUsersService userService)
@@ -27,7 +27,7 @@ public class AuctionService : IAuctionService
         var auction =
             await _context.Auctions
                 .Include(auction => auction.Item)
-                .Include(auction => auction.Biddings)
+                .Include(auction => auction.Bids)
                 .Where(auction => auction.Id == auctionId).SingleOrDefaultAsync();
 
         if (auction == null) throw new ArgumentException("Auction not Found.");
@@ -38,12 +38,8 @@ public class AuctionService : IAuctionService
     public async Task<List<Auction>> QueryAllAuctions()
         => await _context.Auctions
             .Include(auction => auction.Item)
-            .Include(auction => auction.Biddings)
+            .Include(auction => auction.Bids)
             .ToListAsync();
-
-    private static bool IsAmountValid(double requestAmount, double currentBidAmount) =>
-        requestAmount > currentBidAmount
-        && requestAmount - currentBidAmount >= 10;
 
     private static bool IsEndOfAuctionValid(DateTime endOfAuctionRequest)
         => endOfAuctionRequest > DateTime.Now;
@@ -78,24 +74,24 @@ public class AuctionService : IAuctionService
         var user = await _userService.QueryUserById(request.UserId);
         var auction = await QueryAuctionById(request.AuctionId);
 
-        if (!auction.IsBiddingAmountValid(request.Amount))
+        if (!auction.IsBidAmountValid(request.Amount))
             throw new ArgumentException(
                 "The bidding amount is not valid. Check if you respect the MinimumBidIncrement");
 
-        var optionalPreviousBidding = auction.GetBiddingByUserId(request.UserId);
+        var optionalPreviousBidding = auction.GetBidByUserId(request.UserId);
         
         if (optionalPreviousBidding == null)
         {
             if (!user.HasEnoughCredit(auction.MinimumBidIncrement))
                 throw new ArgumentException("Not enough credit to bid at this auction.");
 
-            var bidding = _biddingService.ConstructBidding(request);
+            var bidding = _biddingService.ConstructBid(request);
             
             user.FreezeCredit(request.Amount);
-            user.AddBidding(bidding);
-            auction.AddBidding(bidding);
+            user.AddBid(bidding);
+            auction.AddBid(bidding);
 
-            _context.Biddings.Add(bidding);
+            _context.Bids.Add(bidding);
             _context.Users.Update(user);
             _context.Auctions.Update(auction);
             await _context.SaveChangesAsync();
@@ -103,7 +99,7 @@ public class AuctionService : IAuctionService
         }
 
         var differenceBetweenOldAndNewAmount =
-            optionalPreviousBidding.getDifferenceBetweenOldAndNewAmount(request.Amount);
+            optionalPreviousBidding.GetDifferenceBetweenOldAndNewAmount(request.Amount);
         
         if (!user.HasEnoughCredit(differenceBetweenOldAndNewAmount))
             throw new ArgumentException("Not enough credit to bid at this auction.");
@@ -111,7 +107,7 @@ public class AuctionService : IAuctionService
         user.FreezeCredit(differenceBetweenOldAndNewAmount);
         optionalPreviousBidding.UpdateAmount(request.Amount);
             
-        _context.Biddings.Update(optionalPreviousBidding);
+        _context.Bids.Update(optionalPreviousBidding);
         _context.Auctions.Update(auction);
         _context.Users.Update(user);
         await _context.SaveChangesAsync();
@@ -120,16 +116,16 @@ public class AuctionService : IAuctionService
 
     public async Task<Auction> CancelBidding(int biddingId)
     {
-        var bidding = await _biddingService.QueryBiddingById(biddingId);
+        var bidding = await _biddingService.QueryBidById(biddingId);
         var auction = await QueryAuctionById(bidding.AuctionId);
         var user = await _userService.QueryUserById(bidding.UserId);
 
-        user.RemoveBidding(bidding);
-        auction.RemoveBidding(bidding);
+        user.RemoveBid(bidding);
+        auction.RemoveBid(bidding);
 
         _context.Users.Update(user);
         _context.Auctions.Update(auction);
-        _context.Biddings.Remove(bidding);
+        _context.Bids.Remove(bidding);
 
         await _context.SaveChangesAsync();
         return auction;

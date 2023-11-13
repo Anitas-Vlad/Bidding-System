@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BiddingSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCommit : Migration
+    public partial class RemakeOfDatabaseAfterLittleLittleMistake : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,7 +20,7 @@ namespace BiddingSystem.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<double>(type: "float", nullable: false),
+                    StartingPrice = table.Column<double>(type: "float", nullable: false),
                     AvailableForAuction = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -36,7 +36,9 @@ namespace BiddingSystem.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Credit = table.Column<double>(type: "float", nullable: false),
+                    FrozenCredit = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,7 +53,9 @@ namespace BiddingSystem.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ItemId = table.Column<int>(type: "int", nullable: false),
                     EndOfAuction = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    WinningBiddingId = table.Column<int>(type: "int", nullable: false)
+                    CurrentPrice = table.Column<double>(type: "float", nullable: false),
+                    MinimumBidIncrement = table.Column<double>(type: "float", nullable: false),
+                    WinningBiddingId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -93,7 +97,7 @@ namespace BiddingSystem.Migrations
 
             migrationBuilder.InsertData(
                 table: "Items",
-                columns: new[] { "Id", "AvailableForAuction", "Name", "Price" },
+                columns: new[] { "Id", "AvailableForAuction", "Name", "StartingPrice" },
                 values: new object[,]
                 {
                     { 1000, true, "Napoleon's Favorite Hat", 1000.0 },
@@ -103,12 +107,12 @@ namespace BiddingSystem.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "Email", "PasswordHash", "UserName" },
+                columns: new[] { "Id", "Credit", "Email", "FrozenCredit", "PasswordHash", "UserName" },
                 values: new object[,]
                 {
-                    { 1000, "a@a.a", "$2a$11$WfB5W94FIcoruHpgjKp7ue5zEPOgGUYoW7WJ9jh9vMtYTL4osDTxe", "AAAAA" },
-                    { 1001, "b@b.b", "$2a$11$MtmNAVlXwJh1SmSNKEZhpeKoqzrrJjpATIy/mph.kyTu5SQl1nB.q", "BBBBB" },
-                    { 1002, "c@c.c", "$2a$11$/9Ov6plfeMVJRfu53yzvCuMy7F9v/lAP/kCgjGZo/eJYCDCohjiC2", "CCCCC" }
+                    { 1000, 0.0, "a@a.a", 0.0, "$2a$11$6qLKRVRkL0VA6Hp.GKbu7u6BImT.j5IP2BoJizJZYsJ5QlsGXzAmO", "AAAAA" },
+                    { 1001, 0.0, "b@b.b", 0.0, "$2a$11$O4aVwJH1sjVEsCDY036PDeI1YEchkxJZ.LFXeJwYpwhgmQdztiQCy", "BBBBB" },
+                    { 1002, 0.0, "c@c.c", 0.0, "$2a$11$h/8h55J2MdaLEM29bMnsku5uq5CdAskinx8FLIu712EgfSwTMDmjO", "CCCCC" }
                 });
 
             migrationBuilder.CreateIndex(

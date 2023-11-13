@@ -18,7 +18,7 @@ public class AuctionsController : ControllerBase
     }
     
     [HttpGet]
-    [Route("/{auctionId}")]
+    [Route("/auction-{auctionId}")]
     public async Task<ActionResult<Auction>> GetAuctionById(int auctionId) 
         => await _auctionService.QueryAuctionById(auctionId);
 
@@ -27,11 +27,12 @@ public class AuctionsController : ControllerBase
         => await _auctionService.QueryAllAuctions();
 
     [HttpPost]
+    [Route("/CreateAuction")]
     public async Task<ActionResult<Auction>> CreateAuction(CreateAuctionRequest request)
         => await _auctionService.CreateAuction(request);
 
     [HttpPost]
-    [Route("PlaceBidding")]
+    [Route("/PlaceBidding")]
     public async Task<ActionResult<Auction>> PlaceBiddingForAuction(CreateBiddingRequest request)
         => await _auctionService.PlaceBiddingForAuction(request);
 

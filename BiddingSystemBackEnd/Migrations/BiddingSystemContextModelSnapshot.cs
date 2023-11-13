@@ -22,7 +22,7 @@ namespace BiddingSystem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BiddingSystemBackEnd.Models.Auction", b =>
+            modelBuilder.Entity("BiddingSystem.Models.Auction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -39,7 +39,10 @@ namespace BiddingSystem.Migrations
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
-                    b.Property<int>("WinningBiddingId")
+                    b.Property<double>("MinimumBidIncrement")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("WinningBiddingId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -49,7 +52,7 @@ namespace BiddingSystem.Migrations
                     b.ToTable("Auctions");
                 });
 
-            modelBuilder.Entity("BiddingSystemBackEnd.Models.Bidding", b =>
+            modelBuilder.Entity("BiddingSystem.Models.Bidding", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +78,7 @@ namespace BiddingSystem.Migrations
                     b.ToTable("Biddings");
                 });
 
-            modelBuilder.Entity("BiddingSystemBackEnd.Models.Item", b =>
+            modelBuilder.Entity("BiddingSystem.Models.Item", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,7 +124,7 @@ namespace BiddingSystem.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BiddingSystemBackEnd.Models.User", b =>
+            modelBuilder.Entity("BiddingSystem.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -129,9 +132,15 @@ namespace BiddingSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<double>("Credit")
+                        .HasColumnType("float");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("FrozenCredit")
+                        .HasColumnType("float");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -149,29 +158,35 @@ namespace BiddingSystem.Migrations
                         new
                         {
                             Id = 1000,
+                            Credit = 0.0,
                             Email = "a@a.a",
-                            PasswordHash = "$2a$11$63u.tWLt6w1T6OJk3tk0lefS1gqdWyu4jRpM/RIN3N9uTYhTKUgqO",
+                            FrozenCredit = 0.0,
+                            PasswordHash = "$2a$11$6qLKRVRkL0VA6Hp.GKbu7u6BImT.j5IP2BoJizJZYsJ5QlsGXzAmO",
                             UserName = "AAAAA"
                         },
                         new
                         {
                             Id = 1001,
+                            Credit = 0.0,
                             Email = "b@b.b",
-                            PasswordHash = "$2a$11$Fj8Td3b0ydTcOrK0tuNRBuLobi21avmq9ebSuEgGqVslZcBylr3eO",
+                            FrozenCredit = 0.0,
+                            PasswordHash = "$2a$11$O4aVwJH1sjVEsCDY036PDeI1YEchkxJZ.LFXeJwYpwhgmQdztiQCy",
                             UserName = "BBBBB"
                         },
                         new
                         {
                             Id = 1002,
+                            Credit = 0.0,
                             Email = "c@c.c",
-                            PasswordHash = "$2a$11$RAPP1106g8yPC6RGiuKXpujAViMpnw920XSsObiCYQPDXPaw6Vlx2",
+                            FrozenCredit = 0.0,
+                            PasswordHash = "$2a$11$h/8h55J2MdaLEM29bMnsku5uq5CdAskinx8FLIu712EgfSwTMDmjO",
                             UserName = "CCCCC"
                         });
                 });
 
-            modelBuilder.Entity("BiddingSystemBackEnd.Models.Auction", b =>
+            modelBuilder.Entity("BiddingSystem.Models.Auction", b =>
                 {
-                    b.HasOne("BiddingSystemBackEnd.Models.Item", "Item")
+                    b.HasOne("BiddingSystem.Models.Item", "Item")
                         .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -180,27 +195,27 @@ namespace BiddingSystem.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("BiddingSystemBackEnd.Models.Bidding", b =>
+            modelBuilder.Entity("BiddingSystem.Models.Bidding", b =>
                 {
-                    b.HasOne("BiddingSystemBackEnd.Models.Auction", null)
+                    b.HasOne("BiddingSystem.Models.Auction", null)
                         .WithMany("Biddings")
                         .HasForeignKey("AuctionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BiddingSystemBackEnd.Models.User", null)
+                    b.HasOne("BiddingSystem.Models.User", null)
                         .WithMany("Biddings")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BiddingSystemBackEnd.Models.Auction", b =>
+            modelBuilder.Entity("BiddingSystem.Models.Auction", b =>
                 {
                     b.Navigation("Biddings");
                 });
 
-            modelBuilder.Entity("BiddingSystemBackEnd.Models.User", b =>
+            modelBuilder.Entity("BiddingSystem.Models.User", b =>
                 {
                     b.Navigation("Biddings");
                 });
