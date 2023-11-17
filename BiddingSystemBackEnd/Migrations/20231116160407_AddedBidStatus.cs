@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BiddingSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class RemakeOfDatabaseAfterLittleLittleMistake : Migration
+    public partial class AddedBidStatus : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,7 +55,7 @@ namespace BiddingSystem.Migrations
                     EndOfAuction = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CurrentPrice = table.Column<double>(type: "float", nullable: false),
                     MinimumBidIncrement = table.Column<double>(type: "float", nullable: false),
-                    WinningBiddingId = table.Column<int>(type: "int", nullable: true)
+                    WinningBidId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,26 +69,27 @@ namespace BiddingSystem.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Biddings",
+                name: "Bids",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Amount = table.Column<double>(type: "float", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    AuctionId = table.Column<int>(type: "int", nullable: false)
+                    AuctionId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Biddings", x => x.Id);
+                    table.PrimaryKey("PK_Bids", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Biddings_Auctions_AuctionId",
+                        name: "FK_Bids_Auctions_AuctionId",
                         column: x => x.AuctionId,
                         principalTable: "Auctions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Biddings_Users_UserId",
+                        name: "FK_Bids_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -110,9 +111,9 @@ namespace BiddingSystem.Migrations
                 columns: new[] { "Id", "Credit", "Email", "FrozenCredit", "PasswordHash", "UserName" },
                 values: new object[,]
                 {
-                    { 1000, 0.0, "a@a.a", 0.0, "$2a$11$6qLKRVRkL0VA6Hp.GKbu7u6BImT.j5IP2BoJizJZYsJ5QlsGXzAmO", "AAAAA" },
-                    { 1001, 0.0, "b@b.b", 0.0, "$2a$11$O4aVwJH1sjVEsCDY036PDeI1YEchkxJZ.LFXeJwYpwhgmQdztiQCy", "BBBBB" },
-                    { 1002, 0.0, "c@c.c", 0.0, "$2a$11$h/8h55J2MdaLEM29bMnsku5uq5CdAskinx8FLIu712EgfSwTMDmjO", "CCCCC" }
+                    { 1000, 0.0, "a@a.a", 0.0, "$2a$11$2c41peqyNZtx6tvr27.VJeYlkBt1cJAabxpgRIrMjbzXMmOOB/nYS", "AAAAA" },
+                    { 1001, 0.0, "b@b.b", 0.0, "$2a$11$NZWhBKQjMyfDVGaLBLcuTu.o.aVa9nZXZ051mcKe0aBagRazZJdHy", "BBBBB" },
+                    { 1002, 0.0, "c@c.c", 0.0, "$2a$11$OR9m2CW2bJniFvVwu3ws3uF9Y/ILOnjjM5O0/Iqm6kHZMVu69kBUK", "CCCCC" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -121,13 +122,13 @@ namespace BiddingSystem.Migrations
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Biddings_AuctionId",
-                table: "Biddings",
+                name: "IX_Bids_AuctionId",
+                table: "Bids",
                 column: "AuctionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Biddings_UserId",
-                table: "Biddings",
+                name: "IX_Bids_UserId",
+                table: "Bids",
                 column: "UserId");
         }
 
@@ -135,7 +136,7 @@ namespace BiddingSystem.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Biddings");
+                name: "Bids");
 
             migrationBuilder.DropTable(
                 name: "Auctions");

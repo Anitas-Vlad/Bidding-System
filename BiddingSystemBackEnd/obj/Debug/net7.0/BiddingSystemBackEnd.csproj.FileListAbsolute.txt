@@ -75,3 +75,7 @@ C:\projects\SocialMedia\BiddingSystem\BiddingSystemBackEnd\obj\Debug\net7.0\refi
 C:\projects\SocialMedia\BiddingSystem\BiddingSystemBackEnd\obj\Debug\net7.0\BiddingSystemBackEnd.pdb
 C:\projects\SocialMedia\BiddingSystem\BiddingSystemBackEnd\obj\Debug\net7.0\BiddingSystemBackEnd.genruntimeconfig.cache
 C:\projects\SocialMedia\BiddingSystem\BiddingSystemBackEnd\obj\Debug\net7.0\ref\BiddingSystemBackEnd.dll
+C:\projects\SocialMedia\BiddingSystem\BiddingSystemBackEnd\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\projects\SocialMedia\BiddingSystem\BiddingSystemBackEnd\bin\Debug\net7.0\Scrutor.dll
+C:\projects\SocialMedia\BiddingSystem\BiddingSystemBackEnd\bin\Debug\net7.0\Swashbuckle.AspNetCore.Filters.dll
+C:\projects\SocialMedia\BiddingSystem\BiddingSystemBackEnd\bin\Debug\net7.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll

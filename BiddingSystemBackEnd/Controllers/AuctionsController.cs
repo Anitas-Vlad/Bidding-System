@@ -34,10 +34,10 @@ public class AuctionsController : ControllerBase
     [HttpPost]
     [Route("/PlaceBidding")]
     public async Task<ActionResult<Auction>> PlaceBiddingForAuction(CreateBiddingRequest request)
-        => await _auctionService.PlaceBiddingForAuction(request);
+        => await _auctionService.PlaceBid(request);
 
     [HttpPatch]
     [Route("CancelBidding")]
     public async Task<ActionResult<Auction>> CancelBidding(int biddingId)
-        => await _auctionService.CancelBidding(biddingId);
+        => await _auctionService.CancelBid(biddingId);
 }

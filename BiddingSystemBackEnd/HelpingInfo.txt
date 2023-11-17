@@ -1,0 +1,13 @@
+﻿1. Background Task or Timer:
+Consider implementing a background task or a timer that periodically checks for auctions that need to be ended. 
+This task can run independently of incoming HTTP requests and can be configured to check for auctions that have passed 
+their end time.
+
+For example, you could create a background service or use a library like Hangfire or Quartz.NET to schedule a job that 
+checks and ends auctions based on their end time.
+
+2.  In this example, the Update method is called for each entity in the list within a loop, and then SaveChanges is 
+called once after iterating through the list to persist the changes to the database.
+
+Remember that this approach may result in multiple database update statements, one for each entity. If you are 
+concerned about performance, you might want to consider other strategies, such as using a bulk update library

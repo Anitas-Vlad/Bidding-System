@@ -42,7 +42,7 @@ namespace BiddingSystem.Migrations
                     b.Property<double>("MinimumBidIncrement")
                         .HasColumnType("float");
 
-                    b.Property<int?>("WinningBiddingId")
+                    b.Property<int>("WinningBidId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -52,7 +52,7 @@ namespace BiddingSystem.Migrations
                     b.ToTable("Auctions");
                 });
 
-            modelBuilder.Entity("BiddingSystem.Models.Bidding", b =>
+            modelBuilder.Entity("BiddingSystem.Models.Bid", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,6 +66,9 @@ namespace BiddingSystem.Migrations
                     b.Property<int>("AuctionId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -75,7 +78,7 @@ namespace BiddingSystem.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Biddings");
+                    b.ToTable("Bids");
                 });
 
             modelBuilder.Entity("BiddingSystem.Models.Item", b =>
@@ -161,7 +164,7 @@ namespace BiddingSystem.Migrations
                             Credit = 0.0,
                             Email = "a@a.a",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$6qLKRVRkL0VA6Hp.GKbu7u6BImT.j5IP2BoJizJZYsJ5QlsGXzAmO",
+                            PasswordHash = "$2a$11$2c41peqyNZtx6tvr27.VJeYlkBt1cJAabxpgRIrMjbzXMmOOB/nYS",
                             UserName = "AAAAA"
                         },
                         new
@@ -170,7 +173,7 @@ namespace BiddingSystem.Migrations
                             Credit = 0.0,
                             Email = "b@b.b",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$O4aVwJH1sjVEsCDY036PDeI1YEchkxJZ.LFXeJwYpwhgmQdztiQCy",
+                            PasswordHash = "$2a$11$NZWhBKQjMyfDVGaLBLcuTu.o.aVa9nZXZ051mcKe0aBagRazZJdHy",
                             UserName = "BBBBB"
                         },
                         new
@@ -179,7 +182,7 @@ namespace BiddingSystem.Migrations
                             Credit = 0.0,
                             Email = "c@c.c",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$h/8h55J2MdaLEM29bMnsku5uq5CdAskinx8FLIu712EgfSwTMDmjO",
+                            PasswordHash = "$2a$11$OR9m2CW2bJniFvVwu3ws3uF9Y/ILOnjjM5O0/Iqm6kHZMVu69kBUK",
                             UserName = "CCCCC"
                         });
                 });
@@ -195,16 +198,16 @@ namespace BiddingSystem.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("BiddingSystem.Models.Bidding", b =>
+            modelBuilder.Entity("BiddingSystem.Models.Bid", b =>
                 {
                     b.HasOne("BiddingSystem.Models.Auction", null)
-                        .WithMany("Biddings")
+                        .WithMany("Bids")
                         .HasForeignKey("AuctionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BiddingSystem.Models.User", null)
-                        .WithMany("Biddings")
+                        .WithMany("Bids")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -212,12 +215,12 @@ namespace BiddingSystem.Migrations
 
             modelBuilder.Entity("BiddingSystem.Models.Auction", b =>
                 {
-                    b.Navigation("Biddings");
+                    b.Navigation("Bids");
                 });
 
             modelBuilder.Entity("BiddingSystem.Models.User", b =>
                 {
-                    b.Navigation("Biddings");
+                    b.Navigation("Bids");
                 });
 #pragma warning restore 612, 618
         }

@@ -17,7 +17,7 @@ public class BiddingSystemContext : DbContext
     public DbSet<User> Users { get; set; } = default!;
     public DbSet<Auction> Auctions { get; set; } = default!;
     public DbSet<Item> Items { get; set; } = default!;
-    public DbSet<Bid> Bids { get; set; } = default!;
+    public DbSet<Bid?> Bids { get; set; } = default!;
 
     private static class ModelBuilderExtensions
     {

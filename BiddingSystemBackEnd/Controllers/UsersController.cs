@@ -1,6 +1,7 @@
 ﻿using BiddingSystem.Models;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BiddingSystem.Controllers;
@@ -14,7 +15,7 @@ public class UsersController : ControllerBase
     public UsersController(IUsersService usersService) => _usersService = usersService;
 
     [HttpGet]
-    [Route("/user-{userId}")]
+    [Route("/user-{userId}"), Authorize]
     public async Task<ActionResult<User>> GetUserById(int userId) 
         => await _usersService.QueryUserById(userId);
 

@@ -43,7 +43,7 @@ public class AuthService : IAuthService
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-            _configuration.GetSection("AppSettings:Token").Value!));
+            _configuration.GetSection("JwtSettings:Token").Value!));
 
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 

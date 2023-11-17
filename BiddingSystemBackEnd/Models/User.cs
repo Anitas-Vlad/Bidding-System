@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using BiddingSystem.Models.Enums;
 
 namespace BiddingSystem.Models;
 
@@ -9,24 +10,43 @@ public class User
     [Required] public string PasswordHash { get; set; }
     [Required] public string Email { get; set; }
     [Required] public List<Bid> Bids { get; set; } = new();
-    public double Credit { get; set; } = 0;
-    public double FrozenCredit { get; set; } = 0;
+    [Required] public List<Item> Items { get; set; } = new();
+    public double Credit { get; set; }
+    public double FrozenCredit { get; set; }
 
-    public void RemoveBid(Bid bid)
-        => Bids.Remove(bid);
+    //TODO AddItem
+    public void AddItem(Item item) => Items.Add(item);
+
+    //TODO RemoveSoldItem
+    public void RemoveSoldItem(Item item) => Items.Remove(item);
+    
+    //TODO GetPaid
+    public void GetPaid(double amount) => Credit += amount;
 
     public void AddBid(Bid bid)
         => Bids.Add(bid);
 
-    public bool HasEnoughCredit(double amount) => Credit > amount;
+    public void CancelBid(Bid bid)
+    {
+        bid.Status = BidStatus.Cancelled;
+        UnfreezeCredit(bid.Amount);
+    }
+
+    public void CheckIfHasEnoughCredit(double amount)
+    {
+        if (Credit < amount)
+            throw new AggregateException("Not enough credit.");
+    }
+
     public void AddCredit(double amount) => Credit += amount;
+    public void Pay(double amount) => FrozenCredit -= amount;
 
     public void FreezeCredit(double amount)
     {
         FrozenCredit += amount;
         Credit -= amount;
     }
-    
+
     public void UnfreezeCredit(double amount)
     {
         FrozenCredit -= amount;

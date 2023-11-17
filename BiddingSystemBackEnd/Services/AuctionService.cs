@@ -1,5 +1,6 @@
 ﻿using BiddingSystem.Context;
 using BiddingSystem.Models;
+using BiddingSystem.Models.Enums;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -69,65 +70,132 @@ public class AuctionService : IAuctionService
         return auction;
     }
 
-    public async Task<Auction> PlaceBiddingForAuction(CreateBiddingRequest request)
+    public async Task<Auction> PlaceBid(CreateBiddingRequest request)
     {
         var user = await _userService.QueryUserById(request.UserId);
         var auction = await QueryAuctionById(request.AuctionId);
 
-        if (!auction.IsBidAmountValid(request.Amount))
-            throw new ArgumentException(
-                "The bidding amount is not valid. Check if you respect the MinimumBidIncrement");
+        auction.IsBidAmountValid(request.Amount);
 
-        var optionalPreviousBidding = auction.GetBidByUserId(request.UserId);
-        
-        if (optionalPreviousBidding == null)
+        var optionalPreviousWinningBids = auction.Bids.Where(bid => bid.Status == BidStatus.Winning).ToList();
+        var optionalPreviousUserBid = auction.GetBidByUserId(request.UserId);
+
+        if (optionalPreviousUserBid == null)
         {
-            if (!user.HasEnoughCredit(auction.MinimumBidIncrement))
-                throw new ArgumentException("Not enough credit to bid at this auction.");
+            user.CheckIfHasEnoughCredit(auction.MinimumBidIncrement);
 
-            var bidding = _biddingService.ConstructBid(request);
-            
+            foreach (var previousWinningBid in optionalPreviousWinningBids)
+            {
+                previousWinningBid.Status = BidStatus.Losing;
+                _context.Bids.Update(previousWinningBid);
+            }
+
+            var bid = _biddingService.ConstructBid(request);
             user.FreezeCredit(request.Amount);
-            user.AddBid(bidding);
-            auction.AddBid(bidding);
+            user.AddBid(bid);
+            auction.AddBid(bid);
 
-            _context.Bids.Add(bidding);
+            _context.Bids.Add(bid);
             _context.Users.Update(user);
             _context.Auctions.Update(auction);
             await _context.SaveChangesAsync();
+
             return auction;
         }
 
         var differenceBetweenOldAndNewAmount =
-            optionalPreviousBidding.GetDifferenceBetweenOldAndNewAmount(request.Amount);
+            optionalPreviousUserBid.GetDifferenceBetweenOldAndNewAmount(request.Amount);
+
+        user.CheckIfHasEnoughCredit(differenceBetweenOldAndNewAmount);
         
-        if (!user.HasEnoughCredit(differenceBetweenOldAndNewAmount))
-            throw new ArgumentException("Not enough credit to bid at this auction.");
-        
+        foreach (var previousWinningBid in optionalPreviousWinningBids)
+        {
+            previousWinningBid.Status = BidStatus.Losing;
+            _context.Bids.Update(previousWinningBid);
+        }
+
         user.FreezeCredit(differenceBetweenOldAndNewAmount);
-        optionalPreviousBidding.UpdateAmount(request.Amount);
-            
-        _context.Bids.Update(optionalPreviousBidding);
-        _context.Auctions.Update(auction);
+        optionalPreviousUserBid.UpdateAmount(request.Amount);
+
+        _context.Bids.Update(optionalPreviousUserBid);
         _context.Users.Update(user);
+        _context.Auctions.Update(auction);
         await _context.SaveChangesAsync();
+
         return auction;
     }
 
-    public async Task<Auction> CancelBidding(int biddingId)
+    private void UpdateChangesAfterPlacingBid(Bid? previousWinningBid, User user, Auction auction)
     {
-        var bidding = await _biddingService.QueryBidById(biddingId);
-        var auction = await QueryAuctionById(bidding.AuctionId);
-        var user = await _userService.QueryUserById(bidding.UserId);
+        _context.Bids.Update(previousWinningBid);
+        _context.Users.Update(user);
+        _context.Auctions.Update(auction);
+    }
 
-        user.RemoveBid(bidding);
-        auction.RemoveBid(bidding);
+    public async Task<Auction> CancelBid(int bidId)
+    {
+        var bid = await _biddingService.QueryBidById(bidId);
+        var auction = await QueryAuctionById(bid.AuctionId);
+        var user = await _userService.QueryUserById(bid.UserId);
+
+        user.CancelBid(bid);
+
+        if (!auction.CheckIfBidToRemoveIsTheHighest(bid))
+        {
+            auction.RemoveLosingBid(bid);
+            bid.Status = BidStatus.Cancelled;
+        }
+        else
+        {
+            var optionalNewWinningBid = auction.RemoveWinningBid(bid);
+            if (optionalNewWinningBid != null) 
+                _context.Bids.Update(optionalNewWinningBid);
+        }
 
         _context.Users.Update(user);
         _context.Auctions.Update(auction);
-        _context.Bids.Remove(bidding);
+        _context.Bids.Update(bid);
 
         await _context.SaveChangesAsync();
         return auction;
     }
+
+    public void HandleLosingBids()
+    {
+        
+    }
+
+    // public async Task<Auction?> EndAuction(int auctionId)
+    // {
+    //     var auction = await QueryAuctionById(auctionId);
+    //     var winningBid = auction.GetWinningBid(); //TODO THIS CAN BE NULL IF NOBODY BID ON IT
+    //     
+    //     if (winningBid == null)
+    //     {
+    //         auction.EndAuctionWithNoWinnder();
+    //         return .....;
+    //     }
+    //
+    //     var WinningUser = await _userService.QueryUserById(winningBid.UserId);
+    //
+    //     winningBid.Status = BidStatus.Win;
+    //
+    //     foreach (var bid in auction.Bids.Where(bid => bid.Status == BidStatus.Losing))
+    //     {
+    //         bid.Status = BidStatus.Loss;
+    //         var losingBidUser = await _userService.QueryUserById(bid.UserId);
+    //         losingBidUser.UnfreezeCredit(bid.Amount);
+    //
+    //         _context.Bids.Update(bid);
+    //         _context.Users.Update(losingBidUser);
+    //     }
+    //
+    //     WinningUser.Pay(winningBid.Amount);
+    //
+    //     _context.Bids.Update(winningBid);
+    //     _context.Users.Update(WinningUser);
+    //     await _context.SaveChangesAsync();
+    //
+    //     return winningBid;
+    // }
 }

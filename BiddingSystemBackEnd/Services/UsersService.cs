@@ -35,7 +35,7 @@ public class UsersService : IUsersService
     public Task<List<User>> QueryAllUsers() =>
         _context.Users.Include(user => user.Bids).ToListAsync();
 
-    public async Task<User?> QueryUserByEmail(string userEmail)
+    public async Task<User> QueryUserByEmail(string userEmail)
         => await _context.Users
             .Include(user => user.Bids)
             .Where(user => user.Email == userEmail)

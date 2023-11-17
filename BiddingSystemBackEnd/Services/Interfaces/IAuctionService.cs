@@ -7,7 +7,7 @@ public interface IAuctionService
 {
     Task<Auction> QueryAuctionById(int auctionId);
     Task<Auction> CreateAuction(CreateAuctionRequest request);
-    Task<Auction> PlaceBiddingForAuction(CreateBiddingRequest request);
+    Task<Auction> PlaceBid(CreateBiddingRequest request);
     Task<List<Auction>> QueryAllAuctions();
-    Task<Auction> CancelBidding(int biddingId);
+    Task<Auction> CancelBid(int bidId);
 }
