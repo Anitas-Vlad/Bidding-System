@@ -14,14 +14,17 @@ public class User
     public double Credit { get; set; }
     public double FrozenCredit { get; set; }
 
-    //TODO AddItem
     public void AddItem(Item item) => Items.Add(item);
 
-    //TODO RemoveSoldItem
     public void RemoveSoldItem(Item item) => Items.Remove(item);
     
-    //TODO GetPaid
     public void GetPaid(double amount) => Credit += amount;
+
+    public void SellItem(Auction auction)
+    {
+        GetPaid(auction.CurrentPrice);
+        RemoveSoldItem(auction.Item);
+    }
 
     public void AddBid(Bid bid)
         => Bids.Add(bid);
@@ -47,9 +50,15 @@ public class User
         Credit -= amount;
     }
 
-    public void UnfreezeCredit(double amount)
+    private void UnfreezeCredit(double amount)
     {
         FrozenCredit -= amount;
         Credit += amount;
+    }
+
+    public void LoseBid(Bid bid)
+    {
+        bid.Status = BidStatus.Loss;
+        UnfreezeCredit(bid.Amount);
     }
 }

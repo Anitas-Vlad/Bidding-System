@@ -74,7 +74,7 @@ public class UsersService : IUsersService
     {
         if (!_mailPattern.IsMatch(userEmail))
             throw new ArgumentException("Please enter a valid email.");
-
+        
         if (await QueryUserByEmail(userEmail) != null)
             throw new ArgumentException("Email in use.");
     }

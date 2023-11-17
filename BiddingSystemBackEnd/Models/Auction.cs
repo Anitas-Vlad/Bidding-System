@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using BiddingSystem.Models.Enums;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BiddingSystem.Models;
 
@@ -8,11 +7,12 @@ public class Auction
 {
     public int Id { get; set; }
     [Required] public Item Item { get; set; }
-    // [Required] public int SellerId { get; set; }
+    [Required] public int SellerId { get; set; }
     [Required] public DateTime EndOfAuction { get; set; }
     public double CurrentPrice { get; set; }
     [Required] public double MinimumBidIncrement { get; set; }
     public List<Bid> Bids { get; set; } = new();
+    
     public int WinningBidId { get; set; }
 
     public void AddBid(Bid bid)
@@ -22,10 +22,8 @@ public class Auction
         CurrentPrice = bid.Amount;
     }
 
-    public Bid? GetWinningBid() =>
-        Bids.SingleOrDefault(bid => bid.Status == BidStatus.Winning);
-
-    // public Bid GetWinningBid() => Bids.MaxBy(bid => bid.Amount)!;
+    public Bid GetWinningBid() =>
+        Bids.SingleOrDefault(bid => bid.Status == BidStatus.Winning)!;
 
     private double MinimumBidAmount()
     {

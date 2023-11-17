@@ -34,7 +34,8 @@ public class ItemService : IItemService
         var item = new Item()
         {
             Name = request.Name,
-            StartingPrice = request.Price
+            StartingPrice = request.Price,
+            OwnerId = request.OwnerId
         };
 
         _context.Items.Add(item);
