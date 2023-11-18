@@ -5,7 +5,7 @@ current highest bid.
     The bid amount represents the amount a bidder is willing to pay for the item.
 
 
-TODO Minimum Bid Increment
+TODO Minimum Bid Increment : DONE
     
     To ensure a fair and transparent bidding process, online auction platforms often set 
 a minimum bid increment.

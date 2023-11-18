@@ -4,8 +4,8 @@ TODO :
 * Add a property for Bidding : Bidding.IsActive. This way you can create a bidding and TODO Snipe.
 * Create class UserValidator (IsEmailValid / IsPasswordValid / etc...)
 TODO * Look into these topics for EndAuction(): Background Task or Timer / use a library like Hangfire or Quartz.NET to schedule a job
-* Enum for BidStatus.
 * Enum for AuctionStatus. Refactor all methods so that this status is used.
+*
 
 
 * Users can create Auctions. 
@@ -37,3 +37,4 @@ Maybe you don't even need to use Auction.SetNewHighestBid();.
 * Every Auction has a CreatorUser. I need in in order to Earn the money after selling items;
 * Handle Winning Bid.
 * Handle Losing Bid.
+* Enum for BidStatus.

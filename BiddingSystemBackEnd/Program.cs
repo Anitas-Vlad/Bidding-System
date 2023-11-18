@@ -7,13 +7,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using Hangfire;
+using Hangfire.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddDbContext<BiddingSystemContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("bidding-system-context") ?? throw new InvalidOperationException("Connection string 'bidding-system-context' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("bidding-system-context") ??
+                         throw new InvalidOperationException("Connection string 'bidding-system-context' not found.")));
+
+builder.Services.AddHangfire(config =>
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("bidding-system-context") ??
+                               throw new InvalidOperationException(
+                                   "Connection string 'bidding-system-context' not found.")));
+builder.Services.AddHangfireServer();
 
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -66,6 +75,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseHangfireDashboard();
 
 app.UseHttpsRedirection();
 
