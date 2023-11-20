@@ -2,7 +2,7 @@
 
 namespace BiddingSystem.Models.Requests;
 
-public class CreateBiddingRequest
+public class CreateBidRequest
 {
     [Required] public double Amount { get; set; }
     [Required] public int UserId { get; set; }

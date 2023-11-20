@@ -3,6 +3,7 @@ using BiddingSystem.Models;
 using BiddingSystem.Models.Enums;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -44,22 +45,34 @@ public class AuctionService : IAuctionService
             .ToListAsync();
 
     private static bool IsEndOfAuctionValid(DateTime endOfAuctionRequest)
-        => endOfAuctionRequest > DateTime.Now;
+        => endOfAuctionRequest.ToLocalTime() > DateTime.Now.ToLocalTime();
+    
+    private static void IsBeforeAuctionEndDate(Auction auction)
+    {
+        if ( DateTime.Now.ToLocalTime() > auction.EndOfAuction.ToLocalTime())
+            throw new Exception("Auction has ended.");
+    }
+    
+    
 
     public async Task<Auction> CreateAuction(CreateAuctionRequest request)
     {
         var item = await _itemService.QueryItemById(request.ItemId);
+        
         if (item.AvailableForAuction == false)
             throw new ArgumentException("The Item is already in auction.");
+        
+        if (item.UserId != request.SellerId)
+            throw new ArgumentException("You do not own this item.");
 
-        if (!IsEndOfAuctionValid(request.EndOfAuction))
-            throw new ArgumentException("The end of Auction is not valid.");
+        // if (!IsEndOfAuctionValid(request.EndOfAuction))
+        //     throw new ArgumentException("The end of Auction is not valid.");
 
         var auction = new Auction
         {
             Item = item,
             SellerId = request.SellerId,
-            EndOfAuction = request.EndOfAuction,
+            EndOfAuction = DateTime.Now.ToLocalTime().AddMinutes(1),
             CurrentPrice = item.StartingPrice,
             MinimumBidIncrement = request.MinimumBidIncrement
         };
@@ -69,14 +82,20 @@ public class AuctionService : IAuctionService
         _context.Auctions.Add(auction);
         await _context.SaveChangesAsync();
 
+        // Is this all I have to do?
+        var endAuctionSchedule = BackgroundJob.Schedule(() => EndAuction(auction.Id), auction.EndOfAuction);
+
         return auction;
     }
 
-    public async Task<Auction> PlaceBid(CreateBiddingRequest request)
+    public async Task<Auction> PlaceBid(CreateBidRequest request)
     {
-        var user = await _userService.QueryUserById(request.UserId);
         var auction = await QueryAuctionById(request.AuctionId);
-
+        
+        IsBeforeAuctionEndDate(auction);
+        
+        var user = await _userService.QueryUserById(request.UserId);
+        
         auction.IsBidAmountValid(request.Amount);
 
         var optionalPreviousWinningBids = auction.Bids.Where(bid => bid.Status == BidStatus.Winning).ToList();
@@ -175,7 +194,7 @@ public class AuctionService : IAuctionService
             _context.Bids.Update(bid);
         }
     }
-
+    
     public async Task<Auction> EndAuction(int auctionId)
     {
         var auction = await QueryAuctionById(auctionId);

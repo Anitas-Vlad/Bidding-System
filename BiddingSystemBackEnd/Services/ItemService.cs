@@ -27,20 +27,23 @@ public class ItemService : IItemService
     public async Task<List<Item>> QueryAllItems()
         => await _context.Items.ToListAsync();
 
-    public async Task<Item> CreateItem(CreateItemRequest request)
+    public Item CreateItem(CreateItemRequest request)
     {
-        if (request.Price < 0) throw new ArgumentException("Price cannot be a negative number.");
+        if (request.StartingPrice < 0) 
+            throw new ArgumentException("Price cannot be a negative number.");
 
         var item = new Item()
         {
             Name = request.Name,
-            StartingPrice = request.Price,
-            OwnerId = request.OwnerId
+            StartingPrice = request.StartingPrice,
+            UserId = request.UserId
         };
 
         _context.Items.Add(item);
-        await _context.SaveChangesAsync();
-
+        
         return item;
     }
+
+    public async Task<List<Item>> QueryItemsByUserId(int ownerId)
+        => await _context.Items.Where(item => item.UserId == ownerId).ToListAsync();
 }

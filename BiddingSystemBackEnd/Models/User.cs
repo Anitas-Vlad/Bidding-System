@@ -11,6 +11,7 @@ public class User
     [Required] public string Email { get; set; }
     [Required] public List<Bid> Bids { get; set; } = new();
     [Required] public List<Item> Items { get; set; } = new();
+    [Required] public List<Notification> Notifications { get; set; } = new();
     public double Credit { get; set; }
     public double FrozenCredit { get; set; }
 

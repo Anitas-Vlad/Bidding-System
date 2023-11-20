@@ -27,4 +27,9 @@ public class UsersController : ControllerBase
     [Route("/AddCredit")]
     public async Task<ActionResult<double>> AddCreditToUser(AddCreditRequest request) 
         => await _usersService.AddCredit(request);
+
+    [HttpPost]
+    [Route("/AddItem")]
+    public async Task<ActionResult<User>> AddItem(CreateItemRequest request)
+        => await _usersService.AddItem(request);
 }

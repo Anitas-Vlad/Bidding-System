@@ -42,6 +42,9 @@ namespace BiddingSystem.Migrations
                     b.Property<double>("MinimumBidIncrement")
                         .HasColumnType("float");
 
+                    b.Property<int>("SellerId")
+                        .HasColumnType("int");
+
                     b.Property<int>("WinningBidId")
                         .HasColumnType("int");
 
@@ -99,7 +102,12 @@ namespace BiddingSystem.Migrations
                     b.Property<double>("StartingPrice")
                         .HasColumnType("float");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Items");
 
@@ -109,21 +117,24 @@ namespace BiddingSystem.Migrations
                             Id = 1000,
                             AvailableForAuction = true,
                             Name = "Napoleon's Favorite Hat",
-                            StartingPrice = 1000.0
+                            StartingPrice = 1000.0,
+                            UserId = 1000
                         },
                         new
                         {
                             Id = 1001,
                             AvailableForAuction = true,
                             Name = "McDonald's Forever Free Nuggets",
-                            StartingPrice = 230.0
+                            StartingPrice = 230.0,
+                            UserId = 1002
                         },
                         new
                         {
                             Id = 1002,
                             AvailableForAuction = true,
                             Name = "Eiffel Tower Top Light",
-                            StartingPrice = 56000.0
+                            StartingPrice = 56000.0,
+                            UserId = 1002
                         });
                 });
 
@@ -162,27 +173,27 @@ namespace BiddingSystem.Migrations
                         {
                             Id = 1000,
                             Credit = 0.0,
-                            Email = "a@a.a",
+                            Email = "a@a.com",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$2c41peqyNZtx6tvr27.VJeYlkBt1cJAabxpgRIrMjbzXMmOOB/nYS",
+                            PasswordHash = "$2a$11$93sTYl9lPaQB3CLPekOTm./v9iyg0XkqY.rYMO7DCVw/h7hp1g0Va",
                             UserName = "AAAAA"
                         },
                         new
                         {
                             Id = 1001,
                             Credit = 0.0,
-                            Email = "b@b.b",
+                            Email = "b@b.com",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$NZWhBKQjMyfDVGaLBLcuTu.o.aVa9nZXZ051mcKe0aBagRazZJdHy",
+                            PasswordHash = "$2a$11$xICS73GNj4x9tcrUuPBRj.vVS9dL7mm1DVeWdWLf6Ngg7iTg0kZPq",
                             UserName = "BBBBB"
                         },
                         new
                         {
                             Id = 1002,
                             Credit = 0.0,
-                            Email = "c@c.c",
+                            Email = "c@c.com",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$OR9m2CW2bJniFvVwu3ws3uF9Y/ILOnjjM5O0/Iqm6kHZMVu69kBUK",
+                            PasswordHash = "$2a$11$xjNqNfDdH8nzsPfdrNabhOXR6VDimFK/M4K.hT6Qkxfcq8Iat.JoG",
                             UserName = "CCCCC"
                         });
                 });
@@ -213,6 +224,15 @@ namespace BiddingSystem.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BiddingSystem.Models.Item", b =>
+                {
+                    b.HasOne("BiddingSystem.Models.User", null)
+                        .WithMany("Items")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BiddingSystem.Models.Auction", b =>
                 {
                     b.Navigation("Bids");
@@ -221,6 +241,8 @@ namespace BiddingSystem.Migrations
             modelBuilder.Entity("BiddingSystem.Models.User", b =>
                 {
                     b.Navigation("Bids");
+
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

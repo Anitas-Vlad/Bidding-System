@@ -22,7 +22,7 @@ public class BiddingService : IBiddingService
         return bidding;
     }
 
-    public Bid ConstructBid(CreateBiddingRequest request)
+    public Bid ConstructBid(CreateBidRequest request)
     {
         var bidding = new Bid
         {

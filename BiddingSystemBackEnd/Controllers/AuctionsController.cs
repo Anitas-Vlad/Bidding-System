@@ -33,7 +33,7 @@ public class AuctionsController : ControllerBase
 
     [HttpPost]
     [Route("/PlaceBidding")]
-    public async Task<ActionResult<Auction>> PlaceBiddingForAuction(CreateBiddingRequest request)
+    public async Task<ActionResult<Auction>> PlaceBiddingForAuction(CreateBidRequest request)
         => await _auctionService.PlaceBid(request);
 
     [HttpPatch]

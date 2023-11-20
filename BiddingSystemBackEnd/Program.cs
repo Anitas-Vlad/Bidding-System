@@ -29,6 +29,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuctionService, AuctionService>();
 builder.Services.AddScoped<IBiddingService, BiddingService>();
 builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
 builder.Services.AddAuthentication().AddJwtBearer();
 
 builder.Services.AddControllers();

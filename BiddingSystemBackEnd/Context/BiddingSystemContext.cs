@@ -11,13 +11,20 @@ public class BiddingSystemContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // modelBuilder.Entity<Item>()
+        //     .HasOne<User>()
+        //     .WithMany()
+        //     .HasForeignKey(i => i.UserId)
+        //     .IsRequired();
+        //
         ModelBuilderExtensions.Seed(modelBuilder);
     }
 
     public DbSet<User> Users { get; set; } = default!;
     public DbSet<Auction> Auctions { get; set; } = default!;
     public DbSet<Item> Items { get; set; } = default!;
-    public DbSet<Bid?> Bids { get; set; } = default!;
+    public DbSet<Bid> Bids { get; set; } = default!;
+    public DbSet<Notification> Notifications { get; set; } = default!;
 
     private static class ModelBuilderExtensions
     {
@@ -28,22 +35,25 @@ public class BiddingSystemContext : DbContext
                 {
                     Id = 1000,
                     UserName = "AAAAA",
-                    Email = "a@a.a",
+                    Email = "a@a.com",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Aaaaa123."),
+                    Credit = 10000
                 },
                 new User
                 {
                     Id = 1001,
                     UserName = "BBBBB",
-                    Email = "b@b.b",
+                    Email = "b@b.com",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Bbbbb123."),
+                    Credit = 10000
                 },
                 new User
                 {
                     Id = 1002,
                     UserName = "CCCCC",
-                    Email = "c@c.c",
+                    Email = "c@c.com",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Ccccc123."),
+                    Credit = 10000
                 }
             );
 
@@ -52,6 +62,7 @@ public class BiddingSystemContext : DbContext
                 new Item
                 {
                     Id = 1000,
+                    UserId = 1000,
                     Name = "Napoleon's Favorite Hat",
                     StartingPrice = 1000,
                     AvailableForAuction = true
@@ -59,6 +70,7 @@ public class BiddingSystemContext : DbContext
                 new Item
                 {
                     Id = 1001,
+                    UserId = 1002,
                     Name = "McDonald's Forever Free Nuggets",
                     StartingPrice = 230,
                     AvailableForAuction = true
@@ -66,6 +78,7 @@ public class BiddingSystemContext : DbContext
                 new Item
                 {
                     Id = 1002,
+                    UserId = 1002,
                     Name = "Eiffel Tower Top Light",
                     StartingPrice = 56000,
                     AvailableForAuction = true

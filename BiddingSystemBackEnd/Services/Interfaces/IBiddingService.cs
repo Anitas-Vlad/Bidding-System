@@ -6,5 +6,5 @@ namespace BiddingSystem.Services.Interfaces;
 public interface IBiddingService
 {
     Task<Bid> QueryBidById(int bidId);
-    Bid ConstructBid(CreateBiddingRequest request);
+    Bid ConstructBid(CreateBidRequest request);
 }

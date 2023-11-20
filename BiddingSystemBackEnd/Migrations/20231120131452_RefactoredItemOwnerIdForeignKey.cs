@@ -8,26 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BiddingSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedBidStatus : Migration
+    public partial class RefactoredItemOwnerIdForeignKey : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Items",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StartingPrice = table.Column<double>(type: "float", nullable: false),
-                    AvailableForAuction = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Items", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -46,12 +31,35 @@ namespace BiddingSystem.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Items",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    StartingPrice = table.Column<double>(type: "float", nullable: false),
+                    AvailableForAuction = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Items", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Items_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Auctions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ItemId = table.Column<int>(type: "int", nullable: false),
+                    SellerId = table.Column<int>(type: "int", nullable: false),
                     EndOfAuction = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CurrentPrice = table.Column<double>(type: "float", nullable: false),
                     MinimumBidIncrement = table.Column<double>(type: "float", nullable: false),
@@ -93,17 +101,7 @@ namespace BiddingSystem.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Items",
-                columns: new[] { "Id", "AvailableForAuction", "Name", "StartingPrice" },
-                values: new object[,]
-                {
-                    { 1000, true, "Napoleon's Favorite Hat", 1000.0 },
-                    { 1001, true, "McDonald's Forever Free Nuggets", 230.0 },
-                    { 1002, true, "Eiffel Tower Top Light", 56000.0 }
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.InsertData(
@@ -111,9 +109,19 @@ namespace BiddingSystem.Migrations
                 columns: new[] { "Id", "Credit", "Email", "FrozenCredit", "PasswordHash", "UserName" },
                 values: new object[,]
                 {
-                    { 1000, 0.0, "a@a.a", 0.0, "$2a$11$2c41peqyNZtx6tvr27.VJeYlkBt1cJAabxpgRIrMjbzXMmOOB/nYS", "AAAAA" },
-                    { 1001, 0.0, "b@b.b", 0.0, "$2a$11$NZWhBKQjMyfDVGaLBLcuTu.o.aVa9nZXZ051mcKe0aBagRazZJdHy", "BBBBB" },
-                    { 1002, 0.0, "c@c.c", 0.0, "$2a$11$OR9m2CW2bJniFvVwu3ws3uF9Y/ILOnjjM5O0/Iqm6kHZMVu69kBUK", "CCCCC" }
+                    { 1000, 0.0, "a@a.com", 0.0, "$2a$11$93sTYl9lPaQB3CLPekOTm./v9iyg0XkqY.rYMO7DCVw/h7hp1g0Va", "AAAAA" },
+                    { 1001, 0.0, "b@b.com", 0.0, "$2a$11$xICS73GNj4x9tcrUuPBRj.vVS9dL7mm1DVeWdWLf6Ngg7iTg0kZPq", "BBBBB" },
+                    { 1002, 0.0, "c@c.com", 0.0, "$2a$11$xjNqNfDdH8nzsPfdrNabhOXR6VDimFK/M4K.hT6Qkxfcq8Iat.JoG", "CCCCC" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Items",
+                columns: new[] { "Id", "AvailableForAuction", "Name", "StartingPrice", "UserId" },
+                values: new object[,]
+                {
+                    { 1000, true, "Napoleon's Favorite Hat", 1000.0, 1000 },
+                    { 1001, true, "McDonald's Forever Free Nuggets", 230.0, 1002 },
+                    { 1002, true, "Eiffel Tower Top Light", 56000.0, 1002 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -130,6 +138,11 @@ namespace BiddingSystem.Migrations
                 name: "IX_Bids_UserId",
                 table: "Bids",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Items_UserId",
+                table: "Items",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -142,10 +155,10 @@ namespace BiddingSystem.Migrations
                 name: "Auctions");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Items");
 
             migrationBuilder.DropTable(
-                name: "Items");
+                name: "Users");
         }
     }
 }

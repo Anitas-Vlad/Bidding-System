@@ -12,10 +12,14 @@ public class UsersService : IUsersService
     private readonly BiddingSystemContext _context;
     private static Regex _mailPattern;
     private static Regex _passwordPattern;
+    private readonly IItemService _itemService;
+    private readonly INotificationService _notificationService;
 
-    public UsersService(BiddingSystemContext context)
+    public UsersService(BiddingSystemContext context, IItemService itemService, INotificationService notificationService)
     {
         _context = context;
+        _itemService = itemService;
+        _notificationService = notificationService;
         _mailPattern = new("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         _passwordPattern = new("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
     }
@@ -24,6 +28,7 @@ public class UsersService : IUsersService
     {
         var user = await _context.Users
             .Include(user => user.Bids)
+            .Include(user => user.Items)
             .Where(user => user.Id == userId)
             .FirstOrDefaultAsync();
 
@@ -32,12 +37,16 @@ public class UsersService : IUsersService
         return user;
     }
 
-    public Task<List<User>> QueryAllUsers() =>
-        _context.Users.Include(user => user.Bids).ToListAsync();
+    public async Task<List<User>> QueryAllUsers() =>
+        await _context.Users
+            .Include(user => user.Bids)
+            .Include(user => user.Items)
+            .ToListAsync();
 
     public async Task<User> QueryUserByEmail(string userEmail)
         => await _context.Users
             .Include(user => user.Bids)
+            .Include(user => user.Items)
             .Where(user => user.Email == userEmail)
             .FirstOrDefaultAsync();
 
@@ -61,6 +70,18 @@ public class UsersService : IUsersService
         return user;
     }
 
+    public async Task<User> AddItem(CreateItemRequest request)
+    {
+        var user = await QueryUserById(request.UserId);
+        var item = _itemService.CreateItem(request);
+
+        user.Items.Add(item);
+        _context.Users.Update(user);
+
+        await _context.SaveChangesAsync();
+        return user;
+    }
+
     public async Task<double> AddCredit(AddCreditRequest request)
     {
         var user = await QueryUserById(request.UserId);
@@ -74,7 +95,7 @@ public class UsersService : IUsersService
     {
         if (!_mailPattern.IsMatch(userEmail))
             throw new ArgumentException("Please enter a valid email.");
-        
+
         if (await QueryUserByEmail(userEmail) != null)
             throw new ArgumentException("Email in use.");
     }

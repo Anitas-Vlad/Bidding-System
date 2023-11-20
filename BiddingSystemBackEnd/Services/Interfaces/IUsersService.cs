@@ -10,4 +10,5 @@ public interface IUsersService
     Task<User> QueryUserByEmail(string userEmail);
     Task<User> CreateUser(RegisterRequest request);
     Task<double> AddCredit(AddCreditRequest request);
+    Task<User> AddItem(CreateItemRequest request);
 }

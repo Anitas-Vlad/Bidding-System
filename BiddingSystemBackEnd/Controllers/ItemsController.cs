@@ -23,4 +23,7 @@ public class ItemsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<Item>>> GetAllItems()
         => await _itemsService.QueryAllItems();
+    
+    //TODO Check if it's correct way: PostItem inside UsersController
+    //User contains Items. By encapsulating code, it means the PostItem should be in UsersController  
 }
