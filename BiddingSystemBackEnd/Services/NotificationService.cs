@@ -16,7 +16,8 @@ public class NotificationService : INotificationService
     }
 
     public async Task<List<Notification>> QueryAllNotifications()
-        => await _context.Notifications.ToListAsync();
+        => await _context.Notifications.OrderBy(notification => notification.Time).Reverse()
+            .ToListAsync();
     
     public async Task<List<Notification>> QueryNotificationsByUserId(int userId)
         => await _context.Notifications.Where(notification => notification.UserId == userId)
@@ -28,8 +29,11 @@ public class NotificationService : INotificationService
         {
             UserId = request.UserId,
             Title = request.Title,
-            Description = request.Description
+            Description = request.Description,
+            Time = DateTime.Now.ToLocalTime()
         };
+
+        _context.Notifications.Add(notification);
         return notification;
     }
 }

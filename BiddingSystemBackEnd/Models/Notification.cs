@@ -9,4 +9,5 @@ public class Notification
     [Required] public string Title { get; set; }
     [Required] public string Description { get; set; }
     [Required] public bool IsSeen { get; set; }
+    [Required] public DateTime Time { get; set; }
 }

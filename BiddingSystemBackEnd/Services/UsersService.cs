@@ -13,13 +13,11 @@ public class UsersService : IUsersService
     private static Regex _mailPattern;
     private static Regex _passwordPattern;
     private readonly IItemService _itemService;
-    private readonly INotificationService _notificationService;
 
-    public UsersService(BiddingSystemContext context, IItemService itemService, INotificationService notificationService)
+    public UsersService(BiddingSystemContext context, IItemService itemService)
     {
         _context = context;
         _itemService = itemService;
-        _notificationService = notificationService;
         _mailPattern = new("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         _passwordPattern = new("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
     }
@@ -49,7 +47,7 @@ public class UsersService : IUsersService
             .Include(user => user.Items)
             .Where(user => user.Email == userEmail)
             .FirstOrDefaultAsync();
-
+    
     public async Task<User> CreateUser(RegisterRequest request)
     {
         await IsEmailValid(request.Email);

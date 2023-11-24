@@ -15,14 +15,16 @@ public class AuctionService : IAuctionService
     private readonly IItemService _itemService;
     private readonly IBiddingService _biddingService;
     private readonly IUsersService _userService;
+    private readonly INotificationService _notificationService;
 
     public AuctionService(BiddingSystemContext context, IItemService itemService, IBiddingService biddingService,
-        IUsersService userService)
+        IUsersService userService, INotificationService notificationService)
     {
         _context = context;
         _itemService = itemService;
         _biddingService = biddingService;
         _userService = userService;
+        _notificationService = notificationService;
     }
 
     public async Task<Auction> QueryAuctionById(int auctionId)
@@ -53,11 +55,10 @@ public class AuctionService : IAuctionService
             throw new Exception("Auction has ended.");
     }
     
-    
-
     public async Task<Auction> CreateAuction(CreateAuctionRequest request)
     {
         var item = await _itemService.QueryItemById(request.ItemId);
+        var seller = await _userService.QueryUserById(request.SellerId);
         
         if (item.AvailableForAuction == false)
             throw new ArgumentException("The Item is already in auction.");
@@ -78,6 +79,16 @@ public class AuctionService : IAuctionService
         };
         item.AvailableForAuction = false;
 
+        var newNotificationRequest = new CreateNotificationRequest
+        {
+            UserId = request.SellerId,
+            Description = item.Name + " was successfully put for auction.",
+            Title = item.Name
+        };
+        var notification = _notificationService.CreateNotification(newNotificationRequest);
+        seller.Notifications.Add(notification);
+
+        _context.Users.Update(seller);
         _context.Items.Update(item);
         _context.Auctions.Add(auction);
         await _context.SaveChangesAsync();
@@ -144,13 +155,6 @@ public class AuctionService : IAuctionService
         await _context.SaveChangesAsync();
 
         return auction;
-    }
-
-    private void UpdateChangesAfterPlacingBid(Bid? previousWinningBid, User user, Auction auction)
-    {
-        _context.Bids.Update(previousWinningBid);
-        _context.Users.Update(user);
-        _context.Auctions.Update(auction);
     }
 
     public async Task<Auction> CancelBid(int bidId)
