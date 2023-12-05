@@ -74,7 +74,7 @@ public class AuctionService : IAuctionService
             Item = item,
             SellerId = request.SellerId,
             EndOfAuction = DateTime.Now.ToLocalTime().AddMinutes(1),
-            CurrentPrice = item.StartingPrice,
+            CurrentPrice = request.StartingPrice,
             MinimumBidIncrement = request.MinimumBidIncrement
         };
         item.AvailableForAuction = false;
@@ -198,8 +198,8 @@ public class AuctionService : IAuctionService
             _context.Bids.Update(bid);
         }
     }
-    
-    public async Task<Auction> EndAuction(int auctionId)
+
+    private async Task<Auction> EndAuction(int auctionId)
     {
         var auction = await QueryAuctionById(auctionId);
         var seller = await _userService.QueryUserById(auction.SellerId);

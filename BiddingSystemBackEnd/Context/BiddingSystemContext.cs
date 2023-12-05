@@ -64,7 +64,6 @@ public class BiddingSystemContext : DbContext
                     Id = 1000,
                     UserId = 1000,
                     Name = "Napoleon's Favorite Hat",
-                    StartingPrice = 1000,
                     AvailableForAuction = true
                 },
                 new Item
@@ -72,7 +71,6 @@ public class BiddingSystemContext : DbContext
                     Id = 1001,
                     UserId = 1002,
                     Name = "McDonald's Forever Free Nuggets",
-                    StartingPrice = 230,
                     AvailableForAuction = true
                 },
                 new Item
@@ -80,7 +78,6 @@ public class BiddingSystemContext : DbContext
                     Id = 1002,
                     UserId = 1002,
                     Name = "Eiffel Tower Top Light",
-                    StartingPrice = 56000,
                     AvailableForAuction = true
                 }
             );

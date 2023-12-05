@@ -29,13 +29,9 @@ public class ItemService : IItemService
 
     public Item CreateItem(CreateItemRequest request)
     {
-        if (request.StartingPrice < 0) 
-            throw new ArgumentException("Price cannot be a negative number.");
-
         var item = new Item()
         {
             Name = request.Name,
-            StartingPrice = request.StartingPrice,
             UserId = request.UserId
         };
 

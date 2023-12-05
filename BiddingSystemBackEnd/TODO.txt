@@ -1,13 +1,13 @@
 TODO : 
-* Users have : amount of money in account. They can add more if needed.
-    ===> You can only bid for something you can afford.
-* Add a property for Bidding : Bidding.IsActive. This way you can create a bidding and TODO Snipe.
-* Create class UserValidator (IsEmailValid / IsPasswordValid / etc...)
-* Refactor : StartingPrice should be on Auction, not on Item.
-* Implement the Notifications functionality.
-* TODO : Look into the Observer pattern for notifications implementation refactoring.
-
-* The seller is taxed a percentage by the AuctionWebsite and goes into the Website's Account WHICH SHOULD BE AN ADMIN USER.
+    * Users have : amount of money in account. They can add more if needed.
+        ===> You can only bid for something you can afford.
+    * Add a property for Bidding : Bidding.IsActive. This way you can create a bidding and TODO Snipe.
+    * Create class UserValidator (IsEmailValid / IsPasswordValid / etc...)
+    * Refactor : StartingPrice should be on Auction, not on Item.
+    * Implement the Notifications functionality.
+    * TODO : Look into the Observer pattern for notifications implementation refactoring. Maybe Hangfire -> SendNotification
+    
+    * The seller is taxed a percentage by the AuctionWebsite and goes into the Website's Account WHICH SHOULD BE AN ADMIN USER.
 
 MUST : 
 * Authorisation 
@@ -15,28 +15,30 @@ MUST :
 Create a method "EndAuction()" that when creating an auction, sets an amount of time to wait until in triggers and chooses the winner.  
 
 DONE : 
-* appsettings.json stuff.
-* Users : Login, Register
-* Add ItemService where you handle changes related to Items.
-* In BiddingService Validate : CreateBidding :
-* Find out why and fix PlaceBidding
-* Cancel Bidding.
-* Minimum Bid Increment
-* When placing another bidding, you check the user's money and the previous bidding amount if it's enough. CheckIfHasEnough(amount){return amount<previousBidding+Added(IF THE USER HAS ENOUGH TO BID MORE.)}
-* Freeze money so the user can't use too much.
-* NeededAmount = NewAmount - OldAmount ===> Money MUST= NeededAmount => Bidding.amount += NeededAmount 
-* Create Migration
-* Unfreeze User.Credit when canceling a bidding.
-* refactored auction.IsBidAmountValid();
-* In Auction.RemoveBid(), First check if the bid to be removed is the highest one.
+    * appsettings.json stuff.
+    * Users : Login, Register
+    * Add ItemService where you handle changes related to Items.
+    * In BiddingService Validate : CreateBidding :
+    * Find out why and fix PlaceBidding
+    * Cancel Bidding.
+    * Minimum Bid Increment
+    * When placing another bidding, you check the user's money and the previous bidding amount if it's enough. 
+CheckIfHasEnough(amount){return amount<previousBidding+Added(IF THE USER HAS ENOUGH TO BID MORE.)}
+    * Freeze money so the user can't use too much.
+    * NeededAmount = NewAmount - OldAmount ===> Money MUST= NeededAmount => Bidding.amount += NeededAmount 
+    * Create Migration
+    * Unfreeze User.Credit when canceling a bidding.
+    * refactored auction.IsBidAmountValid();
+    * In Auction.RemoveBid(), First check if the bid to be removed is the highest one.
 Maybe you don't even need to use Auction.SetNewHighestBid();.
-* Users Must have Items in order to be able to sell them. AddItem(), RemoveItem(), SellItem(), etc...
-* Every Auction has a CreatorUser. I need in in order to Earn the money after selling items;
-* Handle Winning Bid.
-* Handle Losing Bid.
-* Enum for BidStatus.
-* Change the times to UTC. Maybe for developing, change the EndTime for creating auctions to be fixed +minutes.
-* User should have a List<Notification> and be updated whenever something happens. like WINNING or LOSING!!!
+    * Users Must have Items in order to be able to sell them. AddItem(), RemoveItem(), SellItem(), etc...
+    * Every Auction has a CreatorUser. I need in in order to Earn the money after selling items;
+    * Handle Winning Bid.
+    * Handle Losing Bid.
+    * Enum for BidStatus.
+    * Change the times to UTC. Maybe for developing, change the EndTime for creating auctions to be fixed +minutes.
+    * User should have a List<Notification> and be updated whenever something happens. like WINNING or LOSING!!!
 TODO * Look into these topics for EndAuction(): Background Task or Timer / use a library like Hangfire or Quartz.NET to schedule a job
-* Users can create Auctions. 
-* When an auction closes and there is a winner, The FrozenCredit goes into the Account of the seller.
+
+    * Users can create Auctions. 
+    * When an auction closes and there is a winner, The FrozenCredit goes into the Account of the seller.
