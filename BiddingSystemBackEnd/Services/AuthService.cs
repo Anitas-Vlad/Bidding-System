@@ -11,12 +11,12 @@ namespace BiddingSystem.Services;
 public class AuthService : IAuthService
 {
     private readonly IUsersService _usersService;
-    private readonly IConfiguration _configuration;
+    private readonly IJwtService _jwtService;
 
-    public AuthService(IConfiguration configuration, IUsersService usersService)
+    public AuthService(IUsersService usersService, IJwtService jwtService)
     {
-        _configuration = configuration;
         _usersService = usersService;
+        _jwtService = jwtService;
     }
 
     public async Task<string> Login(LoginRequest request)
@@ -29,32 +29,8 @@ public class AuthService : IAuthService
         if (!BCrypt.Net.BCrypt.Verify(request.Password, userFromDb.PasswordHash))
             throw new ArgumentException("Wrong password.");
 
-        var token = CreateToken(userFromDb);
+        var token = _jwtService.CreateToken(userFromDb);
 
         return token;
-    }
-
-    private string CreateToken(User user)
-    {
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.Name, user.UserName),
-            new(ClaimTypes.Email, user.Email)
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-            _configuration.GetSection("JwtSettings:Token").Value!));
-
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-        var token = new JwtSecurityToken(
-            claims: claims,
-            expires: DateTime.Now.AddDays(1),
-            signingCredentials: credentials
-        );
-
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-        return jwt;
     }
 }
