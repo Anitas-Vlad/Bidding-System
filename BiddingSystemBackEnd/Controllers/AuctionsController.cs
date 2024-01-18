@@ -1,11 +1,12 @@
 ﻿using BiddingSystem.Models;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BiddingSystem.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class AuctionsController : ControllerBase
@@ -33,8 +34,8 @@ public class AuctionsController : ControllerBase
 
     [HttpPost]
     [Route("/PlaceBidding")]
-    public async Task<ActionResult<Auction>> PlaceBiddingForAuction(CreateBidRequest request)
-        => await _auctionService.PlaceBid(request);
+    public async Task<ActionResult<Auction>> PlaceBiddingForAuction(CreateBidRequest request) 
+        => await _auctionService.PlaceBid(request, HttpContext.User);
 
     [HttpPatch]
     [Route("CancelBidding")]

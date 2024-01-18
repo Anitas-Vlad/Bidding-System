@@ -1,4 +1,5 @@
-﻿using BiddingSystem.Context;
+﻿using System.Security.Claims;
+using BiddingSystem.Context;
 using BiddingSystem.Models;
 using BiddingSystem.Models.Enums;
 using BiddingSystem.Models.Requests;
@@ -16,15 +17,17 @@ public class AuctionService : IAuctionService
     private readonly IBiddingService _biddingService;
     private readonly IUsersService _userService;
     private readonly INotificationService _notificationService;
+    private readonly IJwtService _jwtService;
 
     public AuctionService(BiddingSystemContext context, IItemService itemService, IBiddingService biddingService,
-        IUsersService userService, INotificationService notificationService)
+        IUsersService userService, INotificationService notificationService, IJwtService jwtService)
     {
         _context = context;
         _itemService = itemService;
         _biddingService = biddingService;
         _userService = userService;
         _notificationService = notificationService;
+        _jwtService = jwtService;
     }
 
     public async Task<Auction> QueryAuctionById(int auctionId)
@@ -73,10 +76,11 @@ public class AuctionService : IAuctionService
         {
             Item = item,
             SellerId = request.SellerId,
-            EndOfAuction = DateTime.Now.ToLocalTime().AddMinutes(1),
+            EndOfAuction = DateTime.Now.ToLocalTime().AddMinutes(2),
             CurrentPrice = request.StartingPrice,
             MinimumBidIncrement = request.MinimumBidIncrement
         };
+        
         item.AvailableForAuction = false;
 
         var newNotificationRequest = new CreateNotificationRequest
@@ -99,18 +103,20 @@ public class AuctionService : IAuctionService
         return auction;
     }
 
-    public async Task<Auction> PlaceBid(CreateBidRequest request)
+    public async Task<Auction> PlaceBid(CreateBidRequest request, ClaimsPrincipal userClaims)
     {
         var auction = await QueryAuctionById(request.AuctionId);
         
         IsBeforeAuctionEndDate(auction);
+
+        var userId = _jwtService.GetUserIdFromClaims(userClaims);
         
-        var user = await _userService.QueryUserById(request.UserId);
+        var user = await _userService.QueryUserById(userId);
         
         auction.IsBidAmountValid(request.Amount);
 
         var optionalPreviousWinningBids = auction.Bids.Where(bid => bid.Status == BidStatus.Winning).ToList();
-        var optionalPreviousUserBid = auction.GetBidByUserId(request.UserId);
+        var optionalPreviousUserBid = auction.GetBidByUserId(userId);
 
         if (optionalPreviousUserBid == null)
         {
@@ -122,7 +128,7 @@ public class AuctionService : IAuctionService
                 _context.Bids.Update(previousWinningBid);
             }
 
-            var bid = _biddingService.ConstructBid(request);
+            var bid = _biddingService.ConstructBid(request, userId);
             user.FreezeCredit(request.Amount);
             user.AddBid(bid);
             auction.AddBid(bid);
@@ -185,7 +191,7 @@ public class AuctionService : IAuctionService
         return auction;
     }
 
-    private async Task HandleLosingBids(List<Bid> losingBids)
+    public async Task HandleLosingBids(List<Bid> losingBids)
     {
         foreach (var bid in losingBids)
         {
@@ -199,7 +205,7 @@ public class AuctionService : IAuctionService
         }
     }
 
-    private async Task<Auction> EndAuction(int auctionId)
+    public async Task<Auction> EndAuction(int auctionId)
     {
         var auction = await QueryAuctionById(auctionId);
         var seller = await _userService.QueryUserById(auction.SellerId);
@@ -226,6 +232,7 @@ public class AuctionService : IAuctionService
         
         seller.SellItem(auction);
         winningUser.AddItem(item);
+        item.AvailableForAuction = true;
 
         _context.Items.Update(item);
         _context.Bids.Update(winningBid);

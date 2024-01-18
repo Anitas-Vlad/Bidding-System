@@ -22,12 +22,12 @@ public class BiddingService : IBiddingService
         return bidding;
     }
 
-    public Bid ConstructBid(CreateBidRequest request)
+    public Bid ConstructBid(CreateBidRequest request, int userId)
     {
         var bidding = new Bid
         {
             Amount = request.Amount,
-            UserId = request.UserId,
+            UserId = userId,
             AuctionId = request.AuctionId
         };
 

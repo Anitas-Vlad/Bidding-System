@@ -5,6 +5,6 @@ namespace BiddingSystem.Models.Requests;
 public class CreateBidRequest
 {
     [Required] public double Amount { get; set; }
-    [Required] public int UserId { get; set; }
+    // [Required] public int UserId { get; set; }
     [Required] public int AuctionId { get; set; }
 }
