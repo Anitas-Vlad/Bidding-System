@@ -27,12 +27,12 @@ public class ItemService : IItemService
     public async Task<List<Item>> QueryAllItems()
         => await _context.Items.ToListAsync();
 
-    public Item CreateItem(CreateItemRequest request)
+    public Item CreateItem(CreateItemRequest request, int userId)
     {
-        var item = new Item()
+        var item = new Item
         {
             Name = request.Name,
-            UserId = request.UserId
+            UserId = userId
         };
 
         _context.Items.Add(item);

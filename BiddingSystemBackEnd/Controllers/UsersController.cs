@@ -17,19 +17,15 @@ public class UsersController : ControllerBase
     public UsersController(IUsersService usersService) => _usersService = usersService;
 
     [HttpGet]
-    [Route("/Info")]
-    public async Task<ActionResult<User>> GetUserById()
-    {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+    [Route("/ProfileAccount")]
+    public async Task<ActionResult<User>> GetProfileAccount() 
+        => await _usersService.QueryProfileAccount();
 
-        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-        {
-            return BadRequest("Invalid or missing user ID claim.");
-        }
-
-        return await _usersService.QueryUserById(userId);
-    }
-
+    [HttpGet]
+    [Route("/{userId}")]
+    public async Task<ActionResult<User>> GetUserById(int userId)
+        => await _usersService.QueryUserById(userId);
+    
     [HttpGet]
     public async Task<ActionResult<List<User>>> GetAllUsers() 
         => await _usersService.QueryAllUsers();

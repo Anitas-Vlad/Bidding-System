@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using BiddingSystem.Models;
@@ -11,12 +10,10 @@ namespace BiddingSystem.Services;
 public class JwtService : IJwtService
 {
     private readonly IConfiguration _configuration;
-    private readonly ILogger<JwtService> _logger;
 
-    public JwtService(IConfiguration configuration, ILogger<JwtService> logger)
+    public JwtService(IConfiguration configuration)
     {
         _configuration = configuration;
-        _logger = logger;
     }
 
     public string CreateToken(User user)
@@ -32,20 +29,12 @@ public class JwtService : IJwtService
             _configuration.GetSection("JwtSettings:Token").Value!));
 
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
-
         var header = new JwtHeader(credentials);
 
-        var payload = new JwtPayload("BiddingSystemApi", null, claims, null, DateTime.Today.AddDays(7));
-        payload["aud"] = "http://localhost:5068"; // Set the audience claim
+        var payload = new JwtPayload("BiddingSystemApi", "http://localhost:5068", claims, 
+            null, DateTime.Today.AddDays(7));
 
         var token = new JwtSecurityToken(header, payload);
-
-        var tokenClaims = token.Claims;
-
-        foreach (var claim in tokenClaims)
-        {
-            Console.WriteLine($"{claim.Type}: {claim.Value}");
-        }
       
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
@@ -70,16 +59,17 @@ public class JwtService : IJwtService
     public int GetUserIdFromClaims(ClaimsPrincipal user)
     {
         var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+        
         if (userIdClaim == null)
         {
             // Log or handle the error in a meaningful way
-            throw new ArgumentException("Invalid or missing UserId claim in JWT token.");
+            throw new ArgumentException("userIdClaim == null.");
         }
         
         if (!int.TryParse(userIdClaim.Value, out var userId))
         {
             // Log or handle the error in a meaningful way
-            throw new ArgumentException("Invalid or missing UserId claim in JWT token.");
+            throw new ArgumentException("!int.TryParse(userIdClaim.Value, out var userId)");
         }
 
         return userId;

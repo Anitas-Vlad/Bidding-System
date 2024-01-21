@@ -18,9 +18,10 @@ public class AuctionService : IAuctionService
     private readonly IUsersService _userService;
     private readonly INotificationService _notificationService;
     private readonly IJwtService _jwtService;
+    private readonly IUserContextService _userContextService;
 
     public AuctionService(BiddingSystemContext context, IItemService itemService, IBiddingService biddingService,
-        IUsersService userService, INotificationService notificationService, IJwtService jwtService)
+        IUsersService userService, INotificationService notificationService, IJwtService jwtService, IUserContextService userContextService)
     {
         _context = context;
         _itemService = itemService;
@@ -28,6 +29,7 @@ public class AuctionService : IAuctionService
         _userService = userService;
         _notificationService = notificationService;
         _jwtService = jwtService;
+        _userContextService = userContextService;
     }
 
     public async Task<Auction> QueryAuctionById(int auctionId)
@@ -49,15 +51,6 @@ public class AuctionService : IAuctionService
             .Include(auction => auction.Bids)
             .ToListAsync();
 
-    private static bool IsEndOfAuctionValid(DateTime endOfAuctionRequest)
-        => endOfAuctionRequest.ToLocalTime() > DateTime.Now.ToLocalTime();
-    
-    private static void IsBeforeAuctionEndDate(Auction auction)
-    {
-        if ( DateTime.Now.ToLocalTime() > auction.EndOfAuction.ToLocalTime())
-            throw new Exception("Auction has ended.");
-    }
-    
     public async Task<Auction> CreateAuction(CreateAuctionRequest request)
     {
         var item = await _itemService.QueryItemById(request.ItemId);
@@ -163,12 +156,25 @@ public class AuctionService : IAuctionService
         return auction;
     }
 
+    private void CheckIfUserOwnsBid(Bid bid)
+    {
+        var userProfileId = _userContextService.GetUserId();
+
+        var isSameUserId = userProfileId != bid.UserId;
+        
+        if (!isSameUserId)
+            throw new InvalidOperationException("Invalid user ID claim.");
+    }
+
     public async Task<Auction> CancelBid(int bidId)
     {
         var bid = await _biddingService.QueryBidById(bidId);
         var auction = await QueryAuctionById(bid.AuctionId);
+        
+        CheckIfUserOwnsBid(bid);
+        
         var user = await _userService.QueryUserById(bid.UserId);
-
+        
         user.CancelBid(bid);
 
         if (!auction.CheckIfBidToRemoveIsTheHighest(bid))
@@ -240,5 +246,14 @@ public class AuctionService : IAuctionService
         await _context.SaveChangesAsync();
 
         return auction;
+    }
+    
+    private static bool IsEndOfAuctionValid(DateTime endOfAuctionRequest)
+        => endOfAuctionRequest.ToLocalTime() > DateTime.Now.ToLocalTime();
+    
+    private static void IsBeforeAuctionEndDate(Auction auction)
+    {
+        if ( DateTime.Now.ToLocalTime() > auction.EndOfAuction.ToLocalTime())
+            throw new Exception("Auction has ended.");
     }
 }

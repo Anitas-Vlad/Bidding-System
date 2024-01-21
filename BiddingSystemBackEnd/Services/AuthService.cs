@@ -1,10 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using BiddingSystem.Models;
-using BiddingSystem.Models.Requests;
+﻿using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BiddingSystem.Services;
 

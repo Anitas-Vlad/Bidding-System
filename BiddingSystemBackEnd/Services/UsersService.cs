@@ -15,19 +15,35 @@ public class UsersService : IUsersService
     private static Regex _passwordPattern;
     private readonly IItemService _itemService;
     private readonly IJwtService _jwtService;
+    private readonly IUserContextService _userContextService;
 
-    public UsersService(BiddingSystemContext context, IItemService itemService, IJwtService jwtService)
+    public UsersService(BiddingSystemContext context, IItemService itemService, IJwtService jwtService,
+        IUserContextService userContextService)
     {
         _context = context;
         _itemService = itemService;
         _mailPattern = new("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         _passwordPattern = new("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
         _jwtService = jwtService;
+        _userContextService = userContextService;
     }
 
     public async Task<User> QueryUserById(int userId)
     {
-        // var userId = _jwtService.GetUserIdFromClaims(userClaims);
+        var user = await _context.Users
+            .Include(user => user.Bids)
+            .Include(user => user.Items)
+            .Where(user => user.Id == userId)
+            .FirstOrDefaultAsync();
+
+        if (user == null) throw new ArgumentException("User not found.");
+
+        return user;
+    }
+    
+    public async Task<User> QueryProfileAccount()
+    {
+        var userId = _userContextService.GetUserId();
         
         var user = await _context.Users
             .Include(user => user.Bids)
@@ -75,8 +91,9 @@ public class UsersService : IUsersService
 
     public async Task<User> AddItem(CreateItemRequest request)
     {
-        var user = await QueryUserById(request.UserId);
-        var item = _itemService.CreateItem(request);
+        var userId = _userContextService.GetUserId();
+        var user = await QueryUserById(userId);
+        var item = _itemService.CreateItem(request, userId);
 
         user.Items.Add(item);
         _context.Users.Update(user);
@@ -87,9 +104,12 @@ public class UsersService : IUsersService
 
     public async Task<double> AddCredit(AddCreditRequest request)
     {
-        var user = await QueryUserById(request.UserId);
+        var userId = _userContextService.GetUserId();
+        var user = await QueryUserById(userId);
+        
         user.AddCredit(request.Amount);
         _context.Update(user);
+        
         await _context.SaveChangesAsync();
         return user.Credit;
     } 
@@ -98,7 +118,7 @@ public class UsersService : IUsersService
     {
         if (!_mailPattern.IsMatch(userEmail))
             throw new ArgumentException("Please enter a valid email.");
-
+        
         if (await QueryUserByEmail(userEmail) != null)
             throw new ArgumentException("Email in use.");
     }

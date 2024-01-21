@@ -25,5 +25,5 @@ public class ItemsController : ControllerBase
         => await _itemsService.QueryAllItems();
     
     //TODO Check if it's correct way: PostItem inside UsersController
-    //User contains Items. By encapsulating code, it means the PostItem should be in UsersController  
+    //TODO User contains Items. By encapsulating code, it means the PostItem should be in UsersController  
 }

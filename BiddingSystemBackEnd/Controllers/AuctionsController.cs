@@ -23,6 +23,7 @@ public class AuctionsController : ControllerBase
     public async Task<ActionResult<Auction>> GetAuctionById(int auctionId) 
         => await _auctionService.QueryAuctionById(auctionId);
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<List<Auction>>> GetAllAuctions()
         => await _auctionService.QueryAllAuctions();

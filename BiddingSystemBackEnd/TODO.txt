@@ -1,20 +1,14 @@
 TODO : 
-    * Users have : amount of money in account. They can add more if needed.
-        ===> You can only bid for something you can afford.
     * Add a property for Bidding : Bidding.IsActive. This way you can create a bidding and TODO Snipe.
     * Create class UserValidator (IsEmailValid / IsPasswordValid / etc...)
     * Implement the Notifications functionality.
     * TODO : Look into the Observer pattern for notifications implementation refactoring. Maybe Hangfire -> SendNotification
-    * Check if I have to use the claims or I can leave it like this.
     
     * The seller is taxed a percentage by the AuctionWebsite and goes into the Website's Account WHICH SHOULD BE AN ADMIN USER.
 
     TODO : ### IMPORTANT ### :    Don't give too much info in the error message : "Email Not Found." or "Invalid Password.". 
 
 MUST : 
-* Authorisation
-* As an auction is created and constantly exists until the chosen time comes, the Api is constantly active too.
-Create a method "EndAuction()" that when creating an auction, sets an amount of time to wait until in triggers and chooses the winner.
 
 DONE : 
     * appsettings.json stuff.
@@ -45,3 +39,10 @@ Maybe you don't even need to use Auction.SetNewHighestBid();.
     * Users can create Auctions. 
     * When an auction closes and there is a winner, The FrozenCredit goes into the Account of the seller.
     * Refactor : StartingPrice should be on Auction, not on Item.
+    * Users have : amount of money in account. They can add more if needed.
+        ===> You can only bid for something you can afford.
+    * Check if I have to use the claims or I can leave it like this.
+
+    * Authorisation
+    * As an auction is created and constantly exists until the chosen time comes, the Api is constantly active too.
+    * Create a method "EndAuction()" that when creating an auction, sets an amount of time to wait until in triggers and chooses the winner.
