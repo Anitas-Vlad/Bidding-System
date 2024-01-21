@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Claims;
+using System.Text.RegularExpressions;
 using BiddingSystem.Context;
 using BiddingSystem.Models;
 using BiddingSystem.Models.Requests;
@@ -13,17 +14,21 @@ public class UsersService : IUsersService
     private static Regex _mailPattern;
     private static Regex _passwordPattern;
     private readonly IItemService _itemService;
+    private readonly IJwtService _jwtService;
 
-    public UsersService(BiddingSystemContext context, IItemService itemService)
+    public UsersService(BiddingSystemContext context, IItemService itemService, IJwtService jwtService)
     {
         _context = context;
         _itemService = itemService;
         _mailPattern = new("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         _passwordPattern = new("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
+        _jwtService = jwtService;
     }
 
     public async Task<User> QueryUserById(int userId)
     {
+        // var userId = _jwtService.GetUserIdFromClaims(userClaims);
+        
         var user = await _context.Users
             .Include(user => user.Bids)
             .Include(user => user.Items)

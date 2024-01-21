@@ -35,7 +35,8 @@ public class JwtService : IJwtService
 
         var header = new JwtHeader(credentials);
 
-        var payload = new JwtPayload(user.Id.ToString(), null, claims, null, DateTime.Today.AddDays(7));
+        var payload = new JwtPayload("BiddingSystemApi", null, claims, null, DateTime.Today.AddDays(7));
+        payload["aud"] = "http://localhost:5068"; // Set the audience claim
 
         var token = new JwtSecurityToken(header, payload);
 

@@ -1,4 +1,5 @@
-﻿using BiddingSystem.Models;
+﻿using System.Security.Claims;
+using BiddingSystem.Models;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BiddingSystem.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class UsersController : ControllerBase
@@ -15,9 +17,18 @@ public class UsersController : ControllerBase
     public UsersController(IUsersService usersService) => _usersService = usersService;
 
     [HttpGet]
-    [Route("/user-{userId}"), Authorize]
-    public async Task<ActionResult<User>> GetUserById(int userId) 
-        => await _usersService.QueryUserById(userId);
+    [Route("/Info")]
+    public async Task<ActionResult<User>> GetUserById()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+        {
+            return BadRequest("Invalid or missing user ID claim.");
+        }
+
+        return await _usersService.QueryUserById(userId);
+    }
 
     [HttpGet]
     public async Task<ActionResult<List<User>>> GetAllUsers() 
