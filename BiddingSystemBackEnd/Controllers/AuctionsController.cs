@@ -18,6 +18,7 @@ public class AuctionsController : ControllerBase
         _auctionService = auctionService;
     }
     
+    [AllowAnonymous]
     [HttpGet]
     [Route("/auction-{auctionId}")]
     public async Task<ActionResult<Auction>> GetAuctionById(int auctionId) 

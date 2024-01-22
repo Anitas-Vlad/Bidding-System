@@ -8,10 +8,18 @@ TODO :
 
     TODO : ### IMPORTANT ### :    Don't give too much info in the error message : "Email Not Found." or "Invalid Password.". 
 
+NICE TO : 
+    * Inside the AuctionService.cs, PlaceBid() : I remember I had some problems and that's why I wrote it like this: 
+      When searching for the winning bid, I am searching for all and later when a new bid is placed, I am setting them all to losing,
+      even tho there is only one.
+    * Set notifications to Seen. Check if it is optimal to do it through an endpoint.
+
 MUST : 
+    TODO * Instead of Querying through the database for the user, it's more optimal to get it from the Claims.
+    * Send notifications to all: winners / losers / sellers with details related to their actions.
 
 DONE : 
-    * appsettings.json stuff.
+    * appSettings.json stuff.
     * Users : Login, Register
     * Add ItemService where you handle changes related to Items.
     * In BiddingService Validate : CreateBidding :
@@ -20,6 +28,7 @@ DONE :
     * Minimum Bid Increment
     * When placing another bidding, you check the user's money and the previous bidding amount if it's enough. 
 CheckIfHasEnough(amount){return amount<previousBidding+Added(IF THE USER HAS ENOUGH TO BID MORE.)}
+
     * Freeze money so the user can't use too much.
     * NeededAmount = NewAmount - OldAmount ===> Money MUST= NeededAmount => Bidding.amount += NeededAmount 
     * Create Migration
@@ -27,6 +36,7 @@ CheckIfHasEnough(amount){return amount<previousBidding+Added(IF THE USER HAS ENO
     * refactored auction.IsBidAmountValid();
     * In Auction.RemoveBid(), First check if the bid to be removed is the highest one.
 Maybe you don't even need to use Auction.SetNewHighestBid();.
+
     * Users Must have Items in order to be able to sell them. AddItem(), RemoveItem(), SellItem(), etc...
     * Every Auction has a CreatorUser. I need in in order to Earn the money after selling items;
     * Handle Winning Bid.
@@ -46,3 +56,4 @@ Maybe you don't even need to use Auction.SetNewHighestBid();.
     * Authorisation
     * As an auction is created and constantly exists until the chosen time comes, the Api is constantly active too.
     * Create a method "EndAuction()" that when creating an auction, sets an amount of time to wait until in triggers and chooses the winner.
+    * Write Controller/Endpoint Verify Notifications

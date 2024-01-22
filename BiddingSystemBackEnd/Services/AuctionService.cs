@@ -54,12 +54,13 @@ public class AuctionService : IAuctionService
     public async Task<Auction> CreateAuction(CreateAuctionRequest request)
     {
         var item = await _itemService.QueryItemById(request.ItemId);
-        var seller = await _userService.QueryUserById(request.SellerId);
         
         if (item.AvailableForAuction == false)
             throw new ArgumentException("The Item is already in auction.");
         
-        if (item.UserId != request.SellerId)
+        var seller = await _userService.QueryProfileAccount();
+
+        if (item.UserId != seller.Id)
             throw new ArgumentException("You do not own this item.");
 
         // if (!IsEndOfAuctionValid(request.EndOfAuction))
@@ -68,7 +69,7 @@ public class AuctionService : IAuctionService
         var auction = new Auction
         {
             Item = item,
-            SellerId = request.SellerId,
+            SellerId = seller.Id,
             EndOfAuction = DateTime.Now.ToLocalTime().AddMinutes(2),
             CurrentPrice = request.StartingPrice,
             MinimumBidIncrement = request.MinimumBidIncrement
@@ -76,21 +77,15 @@ public class AuctionService : IAuctionService
         
         item.AvailableForAuction = false;
 
-        var newNotificationRequest = new CreateNotificationRequest
-        {
-            UserId = request.SellerId,
-            Description = item.Name + " was successfully put for auction.",
-            Title = item.Name
-        };
-        var notification = _notificationService.CreateNotification(newNotificationRequest);
+        var notification = _notificationService.CreateNotificationForSuccessfullyAddedAuction(auction, seller);
         seller.Notifications.Add(notification);
 
         _context.Users.Update(seller);
         _context.Items.Update(item);
         _context.Auctions.Add(auction);
+        _context.Notifications.Add(notification);
         await _context.SaveChangesAsync();
 
-        // Is this all I have to do?
         var endAuctionSchedule = BackgroundJob.Schedule(() => EndAuction(auction.Id), auction.EndOfAuction);
 
         return auction;
@@ -99,36 +94,36 @@ public class AuctionService : IAuctionService
     public async Task<Auction> PlaceBid(CreateBidRequest request, ClaimsPrincipal userClaims)
     {
         var auction = await QueryAuctionById(request.AuctionId);
-        
         IsBeforeAuctionEndDate(auction);
-
-        var userId = _jwtService.GetUserIdFromClaims(userClaims);
-        
-        var user = await _userService.QueryUserById(userId);
-        
         auction.IsBidAmountValid(request.Amount);
 
-        var optionalPreviousWinningBids = auction.Bids.Where(bid => bid.Status == BidStatus.Winning).ToList();
-        var optionalPreviousUserBid = auction.GetBidByUserId(userId);
+        var userProfileId = _userContextService.GetUserId();
+        
+        var user = await _userService.QueryUserById(userProfileId);
+        var previouslyWinningBid = auction.GetWinningBid();
+        var optionalPreviousUserBid = auction.GetBidByUserId(userProfileId);
 
         if (optionalPreviousUserBid == null)
         {
             user.CheckIfHasEnoughCredit(auction.MinimumBidIncrement);
 
-            foreach (var previousWinningBid in optionalPreviousWinningBids)
+            if (previouslyWinningBid != null)
             {
-                previousWinningBid.Status = BidStatus.Losing;
-                _context.Bids.Update(previousWinningBid);
+                previouslyWinningBid.Status = BidStatus.Losing;
+                _context.Bids.Update(previouslyWinningBid);
             }
 
-            var bid = _biddingService.ConstructBid(request, userId);
+            var bid = _biddingService.ConstructBid(request);
             user.FreezeCredit(request.Amount);
             user.AddBid(bid);
             auction.AddBid(bid);
 
+            var notification = _notificationService.CreateNotificationForNewWinningBid(auction, user);
+
             _context.Bids.Add(bid);
             _context.Users.Update(user);
             _context.Auctions.Update(auction);
+            _context.Notifications.Add(notification);
             await _context.SaveChangesAsync();
 
             return auction;
@@ -139,14 +134,15 @@ public class AuctionService : IAuctionService
 
         user.CheckIfHasEnoughCredit(differenceBetweenOldAndNewAmount);
 
-        foreach (var previousWinningBid in optionalPreviousWinningBids)
+        if (previouslyWinningBid != null)
         {
-            previousWinningBid.Status = BidStatus.Losing;
-            _context.Bids.Update(previousWinningBid);
+            previouslyWinningBid.Status = BidStatus.Losing;
+            _context.Bids.Update(previouslyWinningBid);
         }
 
         user.FreezeCredit(differenceBetweenOldAndNewAmount);
         optionalPreviousUserBid.UpdateAmount(request.Amount);
+        optionalPreviousUserBid.Status = BidStatus.Winning;
 
         _context.Bids.Update(optionalPreviousUserBid);
         _context.Users.Update(user);
@@ -228,12 +224,24 @@ public class AuctionService : IAuctionService
         }
 
         var winningBid = auction.GetWinningBid();
+        var losingBids = auction.Bids.Where(bid => bid.Status == BidStatus.Losing).ToList();
+        
+        if (winningBid == null)
+        {
+            await HandleLosingBids(losingBids);
+            item.AvailableForAuction = true;
+
+            _context.Items.Update(item);
+            
+            await _context.SaveChangesAsync();
+            return auction;
+        }
+        
         winningBid.Status = BidStatus.Win;
         
         var winningUser = await _userService.QueryUserById(winningBid.UserId);
         winningUser.Pay(winningBid.Amount);
         
-        var losingBids = auction.Bids.Where(bid => bid.Status == BidStatus.Losing).ToList();
         await HandleLosingBids(losingBids);
         
         seller.SellItem(auction);

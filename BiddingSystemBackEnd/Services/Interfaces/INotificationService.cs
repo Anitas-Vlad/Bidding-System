@@ -5,7 +5,7 @@ namespace BiddingSystem.Services.Interfaces;
 
 public interface INotificationService
 {
-    Task<List<Notification>> QueryAllNotifications();
-    Task<List<Notification>> QueryNotificationsByUserId(int userId);
-    Notification CreateNotification(CreateNotificationRequest request);
+    Task<List<Notification>> QueryProfileNotifications();
+    Notification CreateNotificationForNewWinningBid(Auction auction, User user);
+    Notification CreateNotificationForSuccessfullyAddedAuction(Auction auction, User user);
 }

@@ -127,6 +127,6 @@ public class UsersService : IUsersService
     {
         if (!_passwordPattern.IsMatch(userPassword))
             throw new ArgumentException(
-                "Password contain special characters, numbers, capital letters and be longer than 8 characters");
+                "Password must contain special characters, numbers, capital letters and be longer than 8 characters");
     }
 }

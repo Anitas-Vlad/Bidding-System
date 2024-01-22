@@ -26,7 +26,7 @@ public class Auction
         CurrentPrice = bid.Amount;
     }
 
-    public Bid GetWinningBid() =>
+    public Bid? GetWinningBid() =>
         Bids.SingleOrDefault(bid => bid.Status == BidStatus.Winning)!;
 
     private double MinimumBidAmount()
@@ -43,6 +43,9 @@ public class Auction
             throw new ArgumentException(
                 "The bidding amount is not valid. Check if you respect the MinimumBidIncrement");
     }
+
+    public string GetItemName()
+        => Item.Name;
 
     public bool CheckIfBidToRemoveIsTheHighest(Bid bid)
         => bid.Id == WinningBidId;

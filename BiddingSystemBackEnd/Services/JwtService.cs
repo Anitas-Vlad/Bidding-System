@@ -61,14 +61,10 @@ public class JwtService : IJwtService
         var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
         
         if (userIdClaim == null)
-        {
-            // Log or handle the error in a meaningful way
             throw new ArgumentException("userIdClaim == null.");
-        }
-        
+
         if (!int.TryParse(userIdClaim.Value, out var userId))
         {
-            // Log or handle the error in a meaningful way
             throw new ArgumentException("!int.TryParse(userIdClaim.Value, out var userId)");
         }
 

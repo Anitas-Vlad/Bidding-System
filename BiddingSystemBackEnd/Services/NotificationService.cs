@@ -9,31 +9,46 @@ namespace BiddingSystem.Services;
 public class NotificationService : INotificationService
 {
     private readonly BiddingSystemContext _context;
+    private readonly IUserContextService _userContextService;
 
-    public NotificationService(BiddingSystemContext context)
+    public NotificationService(BiddingSystemContext context, IUserContextService userContextService)
     {
         _context = context;
+        _userContextService = userContextService;
     }
 
-    public async Task<List<Notification>> QueryAllNotifications()
-        => await _context.Notifications.OrderBy(notification => notification.Time).Reverse()
-            .ToListAsync();
-    
-    public async Task<List<Notification>> QueryNotificationsByUserId(int userId)
-        => await _context.Notifications.Where(notification => notification.UserId == userId)
-            .OrderBy(notification => notification.IsSeen).ToListAsync();
-
-    public Notification CreateNotification(CreateNotificationRequest request)
+    public async Task<List<Notification>> QueryProfileNotifications()
     {
-        var notification = new Notification
+        var userProfileId = _userContextService.GetUserId();
+        return await _context.Notifications.Where(notification => notification.UserId == userProfileId)
+            .OrderBy(notification => notification.IsSeen).ToListAsync();
+    }
+
+    private static Notification CreateBasicNotification(Auction auction, User user)
+        => new()
         {
-            UserId = request.UserId,
-            Title = request.Title,
-            Description = request.Description,
+            UserId = user.Id,
+            Title = auction.GetItemName(),
             Time = DateTime.Now.ToLocalTime()
         };
 
-        _context.Notifications.Add(notification);
+    public Notification CreateNotificationForNewWinningBid(Auction auction, User user)
+    {
+        var notification = CreateBasicNotification(auction, user);
+        
+        notification.Description = "You currently have the highest bid of " + auction.CurrentPrice + 
+                                   "for the item: " + auction.GetItemName() + ".";
+        
+        return notification;
+    }
+
+    public Notification CreateNotificationForSuccessfullyAddedAuction(Auction auction, User user)
+    {
+        var notification = CreateBasicNotification(auction, user);
+        notification.Description = auction.GetItemName() + " was successfully put for auction, " +
+                                   "with the starting price of: " + auction.CurrentPrice + 
+                                   "and the minimum bid increment of: " + auction.MinimumBidIncrement;
+        
         return notification;
     }
 }
