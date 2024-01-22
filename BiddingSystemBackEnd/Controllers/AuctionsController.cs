@@ -20,7 +20,7 @@ public class AuctionsController : ControllerBase
     
     [AllowAnonymous]
     [HttpGet]
-    [Route("/auction-{auctionId}")]
+    [Route("/Auction-{auctionId}")]
     public async Task<ActionResult<Auction>> GetAuctionById(int auctionId) 
         => await _auctionService.QueryAuctionById(auctionId);
 
@@ -37,7 +37,7 @@ public class AuctionsController : ControllerBase
     [HttpPost]
     [Route("/PlaceBidding")]
     public async Task<ActionResult<Auction>> PlaceBiddingForAuction(CreateBidRequest request) 
-        => await _auctionService.PlaceBid(request, HttpContext.User);
+        => await _auctionService.PlaceBid(request);
 
     [HttpPatch]
     [Route("CancelBidding")]

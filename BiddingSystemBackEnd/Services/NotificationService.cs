@@ -35,10 +35,10 @@ public class NotificationService : INotificationService
     public Notification CreateNotificationForNewWinningBid(Auction auction, User user)
     {
         var notification = CreateBasicNotification(auction, user);
-        
-        notification.Description = "You currently have the highest bid of " + auction.CurrentPrice + 
-                                   "for the item: " + auction.GetItemName() + ".";
-        
+
+        notification.Description = "You currently have the highest bid of " + auction.CurrentPrice +
+                                   " for the item: " + auction.GetItemName() + ".";
+
         return notification;
     }
 
@@ -46,9 +46,9 @@ public class NotificationService : INotificationService
     {
         var notification = CreateBasicNotification(auction, user);
         notification.Description = auction.GetItemName() + " was successfully put for auction, " +
-                                   "with the starting price of: " + auction.CurrentPrice + 
-                                   "and the minimum bid increment of: " + auction.MinimumBidIncrement;
-        
+                                   "with the starting price of: " + auction.CurrentPrice +
+                                   " and the minimum bid increment of: " + auction.MinimumBidIncrement;
+
         return notification;
     }
 }

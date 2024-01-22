@@ -1,0 +1,109 @@
+public async Task<Auction> PlaceBid(CreateBidRequest request)
+    {
+        var auction = await QueryAuctionById(request.AuctionId);
+        IsBeforeAuctionEndDate(auction);
+        auction.IsBidAmountValid(request.Amount);
+
+        var userProfileId = _userContextService.GetUserId();
+
+        var user = await _userService.QueryUserById(userProfileId);
+        var previouslyWinningBid = auction.GetWinningBid();
+        var optionalPreviousUserBid = auction.GetBidByUserId(userProfileId);
+
+        var bidUpdateInfo = new BidUpdateInfo
+        {
+            Auction = auction,
+            User = user,
+            PreviouslyWinningBid = previouslyWinningBid,
+            OptionalPreviousUserBid = optionalPreviousUserBid,
+            Request = request
+        };
+
+        if (optionalPreviousUserBid == null)
+        {
+            await HandleNewBid(bidUpdateInfo);
+        }
+        else
+        {
+            await HandleExistingBid(bidUpdateInfo);
+        }
+
+        return auction;
+    }
+
+    private async Task HandleNewBid(BidUpdateInfo bidUpdateInfo)
+    {
+        bidUpdateInfo.User.CheckIfHasEnoughCredit(bidUpdateInfo.Auction.MinimumBidIncrement);
+
+        if (bidUpdateInfo.PreviouslyWinningBid != null)
+        {
+            await SetBidStatus(bidUpdateInfo.PreviouslyWinningBid, BidStatus.Losing);
+        }
+
+        var bid = _biddingService.ConstructBid(bidUpdateInfo.Request);
+        bidUpdateInfo.User.FreezeCredit(bidUpdateInfo.Request.Amount);
+        bidUpdateInfo.User.AddBid(bid);
+        bidUpdateInfo.Auction.AddBid(bid);
+
+        bidUpdateInfo.Notification =
+            _notificationService.CreateNotificationForNewWinningBid(bidUpdateInfo.Auction, bidUpdateInfo.User);
+
+        await UpdateDatabase(bidUpdateInfo);
+    }
+
+    private async Task HandleExistingBid(BidUpdateInfo bidUpdateInfo)
+    {
+        var differenceBetweenOldAndNewAmount =
+            bidUpdateInfo.OptionalPreviousUserBid.GetDifferenceBetweenOldAndNewAmount(bidUpdateInfo.Request.Amount);
+
+        bidUpdateInfo.User.CheckIfHasEnoughCredit(differenceBetweenOldAndNewAmount);
+
+        if (bidUpdateInfo.PreviouslyWinningBid != null)
+        {
+            await SetBidStatus(bidUpdateInfo.PreviouslyWinningBid, BidStatus.Losing);
+        }
+
+        bidUpdateInfo.User.FreezeCredit(differenceBetweenOldAndNewAmount);
+        bidUpdateInfo.OptionalPreviousUserBid.UpdateAmount(bidUpdateInfo.Request.Amount);
+        bidUpdateInfo.OptionalPreviousUserBid.Status = BidStatus.Winning;
+
+        await UpdateDatabase(bidUpdateInfo);
+    }
+
+    private async Task SetBidStatus(Bid bid, BidStatus status)
+    {
+        bid.Status = status;
+        _context.Bids.Update(bid);
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task UpdateDatabase(BidUpdateInfo bidUpdateInfo)
+    {
+        _context.Bids.Add(bidUpdateInfo.OptionalPreviousUserBid);
+        _context.Users.Update(bidUpdateInfo.User);
+        _context.Auctions.Update(bidUpdateInfo.Auction);
+
+        if (bidUpdateInfo.Notification != null)
+        {
+            _context.Notifications.Add(bidUpdateInfo.Notification);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+}
+
+
+
+
+
+
+
+public class BidUpdateInfo
+{
+    public Auction Auction { get; set; }
+    public User User { get; set; }
+    public Bid PreviouslyWinningBid { get; set; }
+    public Bid OptionalPreviousUserBid { get; set; }
+    public CreateBidRequest Request { get; set; }
+    public Notification? Notification { get; set; }
+}

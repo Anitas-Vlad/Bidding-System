@@ -12,4 +12,6 @@ public interface IUsersService
     Task<User> CreateUser(RegisterRequest request);
     Task<double> AddCredit(AddCreditRequest request);
     Task<User> AddItem(CreateItemRequest request);
+    void CheckIfUserOwnsBid(Bid bid);
+    Task HandleLosingBids(List<Bid> losingBids);
 }

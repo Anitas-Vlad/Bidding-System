@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using BiddingSystem.Context;
 using BiddingSystem.Models;
+using BiddingSystem.Models.Enums;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -128,5 +129,29 @@ public class UsersService : IUsersService
         if (!_passwordPattern.IsMatch(userPassword))
             throw new ArgumentException(
                 "Password must contain special characters, numbers, capital letters and be longer than 8 characters");
+    }
+    
+    public void CheckIfUserOwnsBid(Bid bid)
+    {
+        var userProfileId = _userContextService.GetUserId();
+
+        var isSameUserId = userProfileId != bid.UserId;
+
+        if (!isSameUserId)
+            throw new InvalidOperationException("Invalid user ID claim.");
+    }
+    
+    public async Task HandleLosingBids(List<Bid> losingBids)
+    {
+        foreach (var bid in losingBids)
+        {
+            bid.Status = BidStatus.Loss;
+
+            var user = await QueryUserById(bid.UserId);
+            user.LoseBid(bid);
+
+            _context.Users.Update(user);
+            _context.Bids.Update(bid);
+        }
     }
 }

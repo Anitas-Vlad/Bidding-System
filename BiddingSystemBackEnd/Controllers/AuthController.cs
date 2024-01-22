@@ -11,20 +11,20 @@ public class AuthController : ControllerBase
 {
     private readonly IUsersService _usersService;
     private readonly IAuthService _authService;
-    private readonly IJwtService _jwtService;
 
-    public AuthController(IUsersService usersService, IAuthService authService, IJwtService jwtService)
+    public AuthController(IUsersService usersService, IAuthService authService)
     {
         _usersService = usersService;
         _authService = authService;
-        _jwtService = jwtService;
     }
 
-    [HttpPost("register")]
+    [HttpPost]
+    [Route("/Register")]
     public async Task<ActionResult<User>> Register(RegisterRequest request)
         => await _usersService.CreateUser(request);
 
-    [HttpPost("login")]
+    [HttpPost]
+    [Route("/Login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
         var jwt = await _authService.Login(request);
@@ -41,26 +41,9 @@ public class AuthController : ControllerBase
             jwt
         });
     }
-    
-    [HttpGet("user")]
-    public async Task<IActionResult> User()
-    {
-        try
-        {
-            var jwt = Request.Cookies["jwt"];
-            
-            var token = _jwtService.Verify(jwt);
-            var userId = int.Parse(token.Issuer);
-            var user = await _usersService.QueryUserById(userId);
-            return Ok(user);
-        }
-        catch (Exception ex)
-        {
-            return Unauthorized();
-        }
-    }
-    
-    [HttpPost("logout")]
+
+    [HttpPost]
+    [Route("/Logout")]
     public IActionResult Logout()
     {
         Response.Cookies.Delete("jwt");

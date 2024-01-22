@@ -9,14 +9,15 @@ public class Auction
     [Required] public Item Item { get; set; }
     [Required] public int SellerId { get; set; }
     [Required] public DateTime EndOfAuction { get; set; }
-    
+
     [Required]
     [Range(0, double.MaxValue, ErrorMessage = "The price cannot be a negative number.")]
     public double StartingPrice { get; set; }
+
     public double CurrentPrice { get; set; }
     [Required] public double MinimumBidIncrement { get; set; }
     public List<Bid> Bids { get; set; } = new();
-    
+
     public int WinningBidId { get; set; }
 
     public void AddBid(Bid bid)
@@ -80,4 +81,7 @@ public class Auction
 
     public Bid? GetBidByUserId(int userId)
         => Bids.SingleOrDefault(bid => bid.UserId == userId);
+
+    public void SetWinningBidId(int winningBidId) 
+        => WinningBidId = winningBidId;
 }

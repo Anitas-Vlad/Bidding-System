@@ -22,7 +22,7 @@ public class UsersController : ControllerBase
         => await _usersService.QueryProfileAccount();
 
     [HttpGet]
-    [Route("/{userId}")]
+    [Route("/User-{userId}")]
     public async Task<ActionResult<User>> GetUserById(int userId)
         => await _usersService.QueryUserById(userId);
     
