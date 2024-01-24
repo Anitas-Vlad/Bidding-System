@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using BiddingSystem.Models;
+﻿using BiddingSystem.Models;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;

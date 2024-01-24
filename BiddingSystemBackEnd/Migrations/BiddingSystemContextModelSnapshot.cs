@@ -124,7 +124,7 @@ namespace BiddingSystem.Migrations
                             Id = 1001,
                             AvailableForAuction = true,
                             Name = "McDonald's Forever Free Nuggets",
-                            UserId = 1002
+                            UserId = 1000
                         },
                         new
                         {
@@ -202,28 +202,46 @@ namespace BiddingSystem.Migrations
                         {
                             Id = 1000,
                             Credit = 10000.0,
-                            Email = "a@a.com",
+                            Email = "seller1@gmail.com",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$JOw089JRcVZgD2Chk9I3OOA1SBk1R4rVCnRcRSm8FgUuvQJPQjX/m",
-                            UserName = "AAAAA"
+                            PasswordHash = "$2a$11$LAdMtfEFNP4O18i/05WF8eCETkIWzt3BV1gDQ6RsF1Po9MmaRpPa.",
+                            UserName = "Seller 1"
                         },
                         new
                         {
                             Id = 1001,
                             Credit = 10000.0,
-                            Email = "b@b.com",
+                            Email = "buyer1@gmail.com",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$lKflb7kK7WYJAVu9DjuAzO6flV3KVttXTmYfA4gPXeWBVTtQZY3I2",
-                            UserName = "BBBBB"
+                            PasswordHash = "$2a$11$QBw8uksqxPju8DDYw.dor.mt/E8Lx7A7peDvsMoi/HJYZb9Lx8esK",
+                            UserName = "Buyer 1"
                         },
                         new
                         {
                             Id = 1002,
                             Credit = 10000.0,
-                            Email = "c@c.com",
+                            Email = "buyer2@gmail.com",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$.Zss.9FhLsCF59uRVLMKi.E85b/YIjy013SgqYVv3suM5ltSTLMey",
-                            UserName = "CCCCC"
+                            PasswordHash = "$2a$11$ROZaq1OWBXeX0iMuVyXzhOpOJNwmuKRArVfXlSIEeJ/UrEZl1lxNG",
+                            UserName = "Buyer 2"
+                        },
+                        new
+                        {
+                            Id = 1003,
+                            Credit = 0.0,
+                            Email = "buyer3@gmail.com",
+                            FrozenCredit = 0.0,
+                            PasswordHash = "$2a$11$lX9S.a8ENtBeeeJ18CarIu2Asl4/ugynr8vUhgfrvAXEFCuRtMWze",
+                            UserName = "Buyer 3"
+                        },
+                        new
+                        {
+                            Id = 1004,
+                            Credit = 0.0,
+                            Email = "owner@gmail.com",
+                            FrozenCredit = 0.0,
+                            PasswordHash = "$2a$11$qWWN0hRYU44aFmvcdge1f.GEX.ftPuUy4/gDNIwCm9gSq0BsUgHSi",
+                            UserName = "Owner"
                         });
                 });
 

@@ -9,6 +9,7 @@ public interface IUsersService
     Task<User> QueryProfileAccount();
     Task<List<User>> QueryAllUsers();
     Task<User?> QueryUserByEmail(string userEmail);
+    Task<User> QueryOwner();
     Task<User> CreateUser(RegisterRequest request);
     Task<double> AddCredit(AddCreditRequest request);
     Task<User> AddItem(CreateItemRequest request);

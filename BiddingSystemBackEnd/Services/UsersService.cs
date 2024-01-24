@@ -69,6 +69,9 @@ public class UsersService : IUsersService
             .Where(user => user.Email == userEmail)
             .FirstOrDefaultAsync();
 
+    public async Task<User> QueryOwner()
+        => await _context.Users.FirstAsync(user => user.Email == "owner@gmail.com");
+
     public async Task<User> CreateUser(RegisterRequest request)
     {
         await IsEmailValid(request.Email);

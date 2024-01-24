@@ -80,14 +80,14 @@ public class AuctionService : IAuctionService
         item.AvailableForAuction = false;
 
         _notificationService.HandleNotificationForSuccessfullyAddedAuction(auction, seller);
-        
+
         _context.Users.Update(seller);
         _context.Items.Update(item);
         _context.Auctions.Add(auction);
         await _context.SaveChangesAsync();
 
         var endAuctionSchedule = BackgroundJob.Schedule(() => EndAuction(auction.Id), auction.EndOfAuction);
-        
+
         return auction;
     }
 
@@ -219,25 +219,24 @@ public class AuctionService : IAuctionService
         var item = auction.Item;
         
         var winningBid = auction.GetWinningBid();
-
         if (winningBid == null)
         {
             await HandleNoWinningBidCase(item);
             _notificationService.HandleNotificationForUnsuccessfulSeller(auction, seller);
             return auction;
         }
-
         winningBid.Status = BidStatus.Win;
 
         var winningUser = await _userService.QueryUserById(winningBid.UserId);
-        winningUser.Pay(winningBid.Amount);
+        winningUser.PayWithFrozenCredit(winningBid.Amount);
         auction.SetWinningBidId(winningBid.Id);
 
         _notificationService.HandleNotificationForWinner(auction, winningUser);
 
         await _userService.HandleLosingBids(auction);
+        
+        await HandlePayment(auction, seller);
 
-        seller.SellItem(auction);
         winningUser.AddItem(item);
         item.AvailableForAuction = true;
 
@@ -249,12 +248,13 @@ public class AuctionService : IAuctionService
         return auction;
     }
 
-    private async Task HandleNoBidsCase(Item item)
+    private async Task HandlePayment(Auction auction, User seller)
     {
-        item.AvailableForAuction = true;
+        var ownerAccount = await _userService.QueryOwner();
+        var taxes = auction.CurrentPrice / 20;
 
-        _context.Items.Update(item);
-        await _context.SaveChangesAsync();
+        seller.Sell(auction, taxes);
+        ownerAccount.Credit += taxes;
     }
 
     private async Task HandleNoWinningBidCase(Item item)

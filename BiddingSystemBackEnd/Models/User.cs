@@ -21,11 +21,15 @@ public class User
 
     private void GetPaid(double amount) => Credit += amount;
 
-    public void SellItem(Auction auction)
+    public void Sell(Auction auction, double taxes)
     {
         GetPaid(auction.CurrentPrice);
         RemoveSoldItem(auction.Item);
+        Pay(taxes);
     }
+
+    private void Pay(double amount)
+        => Credit -= amount;
 
     public void ReceiveNotification(Notification notification)
         => Notifications.Add(notification);
@@ -48,7 +52,7 @@ public class User
     public void AddCredit(double amount)
         => Credit += amount;
 
-    public void Pay(double amount)
+    public void PayWithFrozenCredit(double amount)
         => FrozenCredit -= amount;
 
     public void FreezeCredit(double amount)

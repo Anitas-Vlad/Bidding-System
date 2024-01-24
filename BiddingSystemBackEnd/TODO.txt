@@ -7,7 +7,7 @@ TODO :
     TODO : ### IMPORTANT ### :    Don't give too much info in the error message : "Email Not Found." or "Invalid Password.". 
     * Check into AuctionService.SetBiddingStatus(). Is it really needed?
     * Use the BidStatus.Cancelled Enum instead of removing it from the database for a better user history.
-
+    TODO For some reason, User got a notification that they paid 150, but the bet was 180. CHECK WHY!
 
 TO REFACTOR : 
     * AuctionService.CancelBid()  : I am currently using the _userContextService.GetUserId() twice.
@@ -16,10 +16,12 @@ Maybe write another method that only uses it once and returns the user.
 NICE TO : 
     * Set notifications to Seen. Check if it is optimal to do it through an endpoint that accepts a List<Id> that would 
 be sent from the FrontEnd.
-    * The seller is taxed a percentage by the AuctionWebsite and goes into the Website's Account WHICH SHOULD BE AN ADMIN USER.
 
 MUST : 
     TODO * Instead of Querying through the database for the user, it's more optimal to get it from the Claims.
+    * The seller is taxed a percentage by the AuctionWebsite and goes into the Website's Account WHICH SHOULD BE AN ADMIN USER.
+    * Make the admin user and the logics between tax and the seller.
+    * AdminsController
 
 DONE : 
     * appSettings.json stuff.
