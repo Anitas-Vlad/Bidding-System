@@ -8,10 +8,10 @@ public interface IUsersService
     Task<User> QueryUserById(int userId);
     Task<User> QueryProfileAccount();
     Task<List<User>> QueryAllUsers();
-    Task<User> QueryUserByEmail(string userEmail);
+    Task<User?> QueryUserByEmail(string userEmail);
     Task<User> CreateUser(RegisterRequest request);
     Task<double> AddCredit(AddCreditRequest request);
     Task<User> AddItem(CreateItemRequest request);
     void CheckIfUserOwnsBid(Bid bid);
-    Task HandleLosingBids(List<Bid> losingBids);
+    Task HandleLosingBids(Auction auction);
 }

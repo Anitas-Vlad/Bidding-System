@@ -17,15 +17,18 @@ public class User
 
     public void AddItem(Item item) => Items.Add(item);
 
-    public void RemoveSoldItem(Item item) => Items.Remove(item);
-    
-    public void GetPaid(double amount) => Credit += amount;
+    private void RemoveSoldItem(Item item) => Items.Remove(item);
+
+    private void GetPaid(double amount) => Credit += amount;
 
     public void SellItem(Auction auction)
     {
         GetPaid(auction.CurrentPrice);
         RemoveSoldItem(auction.Item);
     }
+
+    public void ReceiveNotification(Notification notification)
+        => Notifications.Add(notification);
 
     public void AddBid(Bid bid)
         => Bids.Add(bid);
@@ -42,8 +45,11 @@ public class User
             throw new AggregateException("Not enough credit.");
     }
 
-    public void AddCredit(double amount) => Credit += amount;
-    public void Pay(double amount) => FrozenCredit -= amount;
+    public void AddCredit(double amount)
+        => Credit += amount;
+
+    public void Pay(double amount)
+        => FrozenCredit -= amount;
 
     public void FreezeCredit(double amount)
     {

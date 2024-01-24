@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using BiddingSystem.Context;
 using BiddingSystem.Models;
 using BiddingSystem.Models.Enums;
@@ -15,18 +14,18 @@ public class UsersService : IUsersService
     private static Regex _mailPattern;
     private static Regex _passwordPattern;
     private readonly IItemService _itemService;
-    private readonly IJwtService _jwtService;
     private readonly IUserContextService _userContextService;
+    private readonly INotificationService _notificationService;
 
-    public UsersService(BiddingSystemContext context, IItemService itemService, IJwtService jwtService,
-        IUserContextService userContextService)
+    public UsersService(BiddingSystemContext context, IItemService itemService,
+        IUserContextService userContextService, INotificationService notificationService)
     {
         _context = context;
         _itemService = itemService;
         _mailPattern = new("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         _passwordPattern = new("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
-        _jwtService = jwtService;
         _userContextService = userContextService;
+        _notificationService = notificationService;
     }
 
     public async Task<User> QueryUserById(int userId)
@@ -41,11 +40,11 @@ public class UsersService : IUsersService
 
         return user;
     }
-    
+
     public async Task<User> QueryProfileAccount()
     {
         var userId = _userContextService.GetUserId();
-        
+
         var user = await _context.Users
             .Include(user => user.Bids)
             .Include(user => user.Items)
@@ -63,13 +62,13 @@ public class UsersService : IUsersService
             .Include(user => user.Items)
             .ToListAsync();
 
-    public async Task<User> QueryUserByEmail(string userEmail)
+    public async Task<User?> QueryUserByEmail(string userEmail)
         => await _context.Users
             .Include(user => user.Bids)
             .Include(user => user.Items)
             .Where(user => user.Email == userEmail)
             .FirstOrDefaultAsync();
-    
+
     public async Task<User> CreateUser(RegisterRequest request)
     {
         await IsEmailValid(request.Email);
@@ -107,19 +106,19 @@ public class UsersService : IUsersService
     {
         var userId = _userContextService.GetUserId();
         var user = await QueryUserById(userId);
-        
+
         user.AddCredit(request.Amount);
         _context.Update(user);
-        
+
         await _context.SaveChangesAsync();
         return user.Credit;
-    } 
+    }
 
     private async Task IsEmailValid(string userEmail)
     {
         if (!_mailPattern.IsMatch(userEmail))
             throw new ArgumentException("Please enter a valid email.");
-        
+
         if (await QueryUserByEmail(userEmail) != null)
             throw new ArgumentException("Email in use.");
     }
@@ -130,7 +129,7 @@ public class UsersService : IUsersService
             throw new ArgumentException(
                 "Password must contain special characters, numbers, capital letters and be longer than 8 characters");
     }
-    
+
     public void CheckIfUserOwnsBid(Bid bid)
     {
         var userProfileId = _userContextService.GetUserId();
@@ -140,15 +139,18 @@ public class UsersService : IUsersService
         if (!isSameUserId)
             throw new InvalidOperationException("Invalid user ID claim.");
     }
-    
-    public async Task HandleLosingBids(List<Bid> losingBids)
+
+    public async Task HandleLosingBids(Auction auction)
     {
+        var losingBids = auction.Bids.Where(bid => bid.Status == BidStatus.Losing);
         foreach (var bid in losingBids)
         {
             bid.Status = BidStatus.Loss;
 
             var user = await QueryUserById(bid.UserId);
             user.LoseBid(bid);
+            
+            await _notificationService.HandleNotificationForLoser(auction, bid);
 
             _context.Users.Update(user);
             _context.Bids.Update(bid);

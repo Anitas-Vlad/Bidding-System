@@ -32,23 +32,101 @@ public class NotificationService : INotificationService
             Time = DateTime.Now.ToLocalTime()
         };
 
-    public Notification CreateNotificationForNewWinningBid(Auction auction, User user)
+    public void HandleNotificationForNewWinningBid(Auction auction, User user)
     {
         var notification = CreateBasicNotification(auction, user);
 
-        notification.Description = "You currently have the highest bid of " + auction.CurrentPrice +
+        notification.Description = "Congratulations! You currently have the highest bid of " + auction.CurrentPrice +
                                    " for the item: " + auction.GetItemName() + ".";
 
-        return notification;
+        user.ReceiveNotification(notification);
+        _context.Notifications.Add(notification);
     }
 
-    public Notification CreateNotificationForSuccessfullyAddedAuction(Auction auction, User user)
+    public void HandleNotificationForSuccessfullyAddedAuction(Auction auction, User user)
     {
         var notification = CreateBasicNotification(auction, user);
         notification.Description = auction.GetItemName() + " was successfully put for auction, " +
                                    "with the starting price of: " + auction.CurrentPrice +
                                    " and the minimum bid increment of: " + auction.MinimumBidIncrement;
 
-        return notification;
+        user.ReceiveNotification(notification);
+        _context.Notifications.Add(notification);
+    }
+
+    public void HandleNotificationForDowngradeToLosingBid(Auction auction, User user, double amount)
+    {
+        var notification = CreateBasicNotification(auction, user);
+
+        notification.Description =
+            $"Someone placed the bid of {amount}," +
+            $" and is currently the winning the auction for the item: {auction.GetItemName()}";
+
+        user.ReceiveNotification(notification);
+        _context.Notifications.Add(notification);
+    }
+    
+    public void HandleNotificationForWinner(Auction auction, User user)
+    {
+        var notification = CreateBasicNotification(auction, user);
+
+        notification.Description =
+            $"Congratulations, you have won the item: {auction.GetItemName()}," +
+            $" and you have paid a total of: {auction.CurrentPrice}.";
+
+        user.ReceiveNotification(notification);
+
+        user.ReceiveNotification(notification);
+        _context.Notifications.Add(notification);
+    }
+    
+    //TODO Maybe for Losers and List<User> is needed.
+    public async Task HandleNotificationForLosers(Auction auction)
+    {
+        var bids = auction.Bids;
+
+        foreach (var bid in bids)
+        {
+            var user = await _context.Users.FirstAsync(user => user.Id == bid.UserId);
+            var notification = CreateBasicNotification(auction, user);
+            notification.Description = "";
+
+            user.ReceiveNotification(notification);
+            _context.Notifications.Add(notification);
+        }
+    }
+    
+    public async Task HandleNotificationForLoser(Auction auction, Bid bid)
+    {
+        
+            var user = await _context.Users.FirstAsync(user => user.Id == bid.UserId);
+            var notification = CreateBasicNotification(auction, user);
+            notification.Description = "You lost in auction for the item: " + auction.GetItemName()+ 
+                                       " and the amount of ______ has been unfrozen.";
+
+            user.ReceiveNotification(notification);
+            _context.Notifications.Add(notification);
+    }
+    
+    public void HandleNotificationForSuccessfulSeller(Auction auction, User user)
+    {
+        var notification = CreateBasicNotification(auction, user);
+
+        notification.Description =
+            $"Congratulations! The item: {auction.GetItemName()} " +
+            $"was sold at auction with the price of: {auction.CurrentPrice}.";
+
+        user.ReceiveNotification(notification);
+        _context.Notifications.Add(notification);
+    }
+    
+    public void HandleNotificationForUnsuccessfulSeller(Auction auction, User user)
+    {
+        var notification = CreateBasicNotification(auction, user);
+
+        notification.Description = $"The item: {auction.GetItemName()} was not sold at auction.";
+
+        user.ReceiveNotification(notification);
+        _context.Notifications.Add(notification);
     }
 }

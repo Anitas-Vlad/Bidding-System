@@ -6,6 +6,12 @@ namespace BiddingSystem.Services.Interfaces;
 public interface INotificationService
 {
     Task<List<Notification>> QueryProfileNotifications();
-    Notification CreateNotificationForNewWinningBid(Auction auction, User user);
-    Notification CreateNotificationForSuccessfullyAddedAuction(Auction auction, User user);
+    void HandleNotificationForNewWinningBid(Auction auction, User user);
+    void HandleNotificationForSuccessfullyAddedAuction(Auction auction, User user);
+    void HandleNotificationForDowngradeToLosingBid(Auction auction, User user, double amount);
+    void HandleNotificationForWinner(Auction auction, User user);
+    void HandleNotificationForSuccessfulSeller(Auction auction, User user);
+    void HandleNotificationForUnsuccessfulSeller(Auction auction, User user);
+    Task HandleNotificationForLosers(Auction auction);
+    Task HandleNotificationForLoser(Auction auction, Bid bid);
 }
