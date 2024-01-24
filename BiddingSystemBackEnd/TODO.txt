@@ -3,16 +3,22 @@ TODO :
     * Create class UserValidator (IsEmailValid / IsPasswordValid / etc...)
     * Implement the Notifications functionality.
     * TODO : Look into the Observer pattern for notifications implementation refactoring. Maybe Hangfire -> SendNotification
-    
-    * The seller is taxed a percentage by the AuctionWebsite and goes into the Website's Account WHICH SHOULD BE AN ADMIN USER.
 
     TODO : ### IMPORTANT ### :    Don't give too much info in the error message : "Email Not Found." or "Invalid Password.". 
+    * Check into AuctionService.SetBiddingStatus(). Is it really needed?
+    * Use the BidStatus.Cancelled Enum instead of removing it from the database for a better user history.
+
+TO REFACTOR : 
+    * AuctionService.CancelBid()  : I am currently using the _userContextService.GetUserId() twice.
+Maybe write another method that only uses it once and returns the user. 
 
 NICE TO : 
     * Inside the AuctionService.cs, PlaceBid() : I remember I had some problems and that's why I wrote it like this: 
       When searching for the winning bid, I am searching for all and later when a new bid is placed, I am setting them all to losing,
       even tho there is only one.
-    * Set notifications to Seen. Check if it is optimal to do it through an endpoint.
+    * Set notifications to Seen. Check if it is optimal to do it through an endpoint that accepts a List<Id> that would 
+be sent from the FrontEnd.
+    * The seller is taxed a percentage by the AuctionWebsite and goes into the Website's Account WHICH SHOULD BE AN ADMIN USER.
 
 MUST : 
     TODO * Instead of Querying through the database for the user, it's more optimal to get it from the Claims.
@@ -57,3 +63,6 @@ Maybe you don't even need to use Auction.SetNewHighestBid();.
     * As an auction is created and constantly exists until the chosen time comes, the Api is constantly active too.
     * Create a method "EndAuction()" that when creating an auction, sets an amount of time to wait until in triggers and chooses the winner.
     * Write Controller/Endpoint Verify Notifications
+    
+    * Actively change the Auction.WinningBidId on PlaceBid.
+    * Actively change the Auction.WinningBidId on CancelBid.

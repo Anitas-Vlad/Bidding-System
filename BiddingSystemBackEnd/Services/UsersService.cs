@@ -135,7 +135,7 @@ public class UsersService : IUsersService
     {
         var userProfileId = _userContextService.GetUserId();
 
-        var isSameUserId = userProfileId != bid.UserId;
+        var isSameUserId = userProfileId == bid.UserId;
 
         if (!isSameUserId)
             throw new InvalidOperationException("Invalid user ID claim.");

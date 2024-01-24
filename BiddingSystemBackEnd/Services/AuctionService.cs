@@ -65,7 +65,6 @@ public class AuctionService : IAuctionService
             throw new ArgumentException("You do not own this item.");
 
         //TODO for development purposes, the functionality of choosing the ending time is commented out.
-
         // if (!IsEndOfAuctionValid(request.EndOfAuction))
         //     throw new ArgumentException("The end of Auction is not valid.");
 
@@ -73,7 +72,7 @@ public class AuctionService : IAuctionService
         {
             Item = item,
             SellerId = seller.Id,
-            EndOfAuction = DateTime.Now.ToLocalTime().AddMinutes(10),
+            EndOfAuction = DateTime.Now.ToLocalTime().AddMinutes(5),
             CurrentPrice = request.StartingPrice,
             MinimumBidIncrement = request.MinimumBidIncrement
         };
@@ -104,42 +103,41 @@ public class AuctionService : IAuctionService
 
         var user = await _userService.QueryUserById(userProfileId);
         var previouslyWinningBid = auction.GetWinningBid();
-        var optionalPreviousUserBid = auction.GetBidByUserId(userProfileId);
+        var optionalExistingUserBid = auction.GetBidByUserId(userProfileId);
 
-        if (optionalPreviousUserBid == null)
+        if (optionalExistingUserBid == null)
         {
             await HandleNewBid(auction, user, previouslyWinningBid, request);
         }
         else
         {
-            await HandleExistingBid(auction, user, previouslyWinningBid, optionalPreviousUserBid, request);
+            await HandleExistingBid(auction, user, previouslyWinningBid, optionalExistingUserBid, request);
         }
 
         return auction;
     }
 
-    private async Task HandleExistingBid(Auction auction, User user, Bid previouslyWinningBid,
-        Bid optionalPreviousUserBid, CreateBidRequest request)
+    private async Task HandleExistingBid(Auction auction, User user, Bid? previouslyWinningBid,
+        Bid existingUserBid, CreateBidRequest request)
     {
         var differenceBetweenOldAndNewAmount =
-            optionalPreviousUserBid.GetDifferenceBetweenOldAndNewAmount(request.Amount);
+            existingUserBid.GetDifferenceBetweenOldAndNewAmount(request.Amount);
 
         user.CheckIfHasEnoughCredit(differenceBetweenOldAndNewAmount);
         
-        if (previouslyWinningBid != null)
-        {
+        if (previouslyWinningBid != null) 
             await SetBidStatus(previouslyWinningBid, BidStatus.Losing);
-        }
 
         user.FreezeCredit(differenceBetweenOldAndNewAmount);
-        optionalPreviousUserBid.UpdateAmount(request.Amount);
-        optionalPreviousUserBid.Status = BidStatus.Winning;
+        existingUserBid.UpdateAmount(request.Amount);
+        auction.WinningBidId = existingUserBid.Id;
+        await SetBidStatus(existingUserBid, BidStatus.Winning);
 
-        _context.Bids.Update(optionalPreviousUserBid);
+        _context.Bids.Update(existingUserBid);
         await UpdateDatabase(auction, user);
     }
 
-    private async Task HandleNewBid(Auction auction, User user, Bid previouslyWinningBid, CreateBidRequest request)
+    private async Task HandleNewBid(Auction auction, User user, Bid? previouslyWinningBid, CreateBidRequest request)
     {
         user.CheckIfHasEnoughCredit(auction.MinimumBidIncrement);
 
@@ -148,14 +146,13 @@ public class AuctionService : IAuctionService
             await SetBidStatus(previouslyWinningBid, BidStatus.Losing);
         }
 
-        var bid = _biddingService.ConstructBid(request);
+        var bid = await _biddingService.CreateBid(request);
         user.FreezeCredit(request.Amount);
         user.AddBid(bid);
         auction.AddBid(bid);
 
         var notification = _notificationService.CreateNotificationForNewWinningBid(auction, user);
 
-        _context.Add(bid);
         await UpdateDatabase(auction, user, notification);
     }
 
@@ -184,7 +181,7 @@ public class AuctionService : IAuctionService
 
         _userService.CheckIfUserOwnsBid(bid);
 
-        var user = await _userService.QueryUserById(bid.UserId);
+        var user = await _userService.QueryProfileAccount();
 
         user.CancelBid(bid);
 
@@ -216,7 +213,7 @@ public class AuctionService : IAuctionService
 
         if (auction.Bids.IsNullOrEmpty())
         {
-            await HandleNoBidsCase(auction, item);
+            await HandleNoBidsCase(item);
             return auction;
         }
 
@@ -225,7 +222,7 @@ public class AuctionService : IAuctionService
 
         if (winningBid == null)
         {
-            await HandleNoWinningBidCase(auction, losingBids, item);
+            await HandleNoWinningBidCase(losingBids, item);
             return auction;
         }
 
@@ -249,7 +246,7 @@ public class AuctionService : IAuctionService
         return auction;
     }
 
-    private async Task HandleNoBidsCase(Auction auction, Item item)
+    private async Task HandleNoBidsCase(Item item)
     {
         item.AvailableForAuction = true;
 
@@ -257,7 +254,7 @@ public class AuctionService : IAuctionService
         await _context.SaveChangesAsync();
     }
 
-    private async Task HandleNoWinningBidCase(Auction auction, List<Bid> losingBids, Item item)
+    private async Task HandleNoWinningBidCase(List<Bid> losingBids, Item item)
     {
         await _userService.HandleLosingBids(losingBids);
         item.AvailableForAuction = true;

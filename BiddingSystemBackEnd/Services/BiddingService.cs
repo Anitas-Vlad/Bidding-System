@@ -24,12 +24,16 @@ public class BiddingService : IBiddingService
         return bidding;
     }
 
-    public Bid ConstructBid(CreateBidRequest request)
-        =>
-            new()
-            {
-                Amount = request.Amount,
-                UserId = _userContextService.GetUserId(),
-                AuctionId = request.AuctionId
-            };
+    public async Task<Bid> CreateBid(CreateBidRequest request)
+    {
+        var bid = new Bid
+        {
+            Amount = request.Amount,
+            UserId = _userContextService.GetUserId(),
+            AuctionId = request.AuctionId
+        };
+        _context.Bids.Add(bid);
+        await _context.SaveChangesAsync();
+        return bid;
+    }
 }

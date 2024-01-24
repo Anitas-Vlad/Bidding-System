@@ -27,7 +27,7 @@ public class Auction
         CurrentPrice = bid.Amount;
     }
 
-    public Bid? GetWinningBid() =>
+    public Bid GetWinningBid() =>
         Bids.SingleOrDefault(bid => bid.Status == BidStatus.Winning)!;
 
     private double MinimumBidAmount()
