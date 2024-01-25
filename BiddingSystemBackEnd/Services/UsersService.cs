@@ -5,6 +5,7 @@ using BiddingSystem.Models.Enums;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace BiddingSystem.Services;
 
@@ -16,9 +17,10 @@ public class UsersService : IUsersService
     private readonly IItemService _itemService;
     private readonly IUserContextService _userContextService;
     private readonly INotificationService _notificationService;
+    private readonly IUserMapper _userMapper;
 
     public UsersService(BiddingSystemContext context, IItemService itemService,
-        IUserContextService userContextService, INotificationService notificationService)
+        IUserContextService userContextService, INotificationService notificationService, IUserMapper userMapper)
     {
         _context = context;
         _itemService = itemService;
@@ -26,6 +28,7 @@ public class UsersService : IUsersService
         _passwordPattern = new("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
         _userContextService = userContextService;
         _notificationService = notificationService;
+        _userMapper = userMapper;
     }
 
     public async Task<User> QueryUserById(int userId)
@@ -41,7 +44,13 @@ public class UsersService : IUsersService
         return user;
     }
 
-    public async Task<User> QueryProfileAccount()
+    public async Task<UserDto> QueryUserProfile(int userId)
+    {
+        var user = await QueryUserById(userId);
+        return _userMapper.Map(user);
+    }
+
+    public async Task<User> QueryPersonalAccount()
     {
         var userId = _userContextService.GetUserId();
 

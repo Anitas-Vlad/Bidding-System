@@ -1,9 +1,11 @@
 ﻿using BiddingSystem.Models;
 using BiddingSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BiddingSystem.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class ItemsController : ControllerBase
@@ -23,7 +25,4 @@ public class ItemsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<Item>>> GetAllItems()
         => await _itemsService.QueryAllItems();
-    
-    //TODO Check if it's correct way: PostItem inside UsersController
-    //TODO User contains Items. By encapsulating code, it means the PostItem should be in UsersController  
 }

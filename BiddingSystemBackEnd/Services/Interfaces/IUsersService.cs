@@ -6,7 +6,8 @@ namespace BiddingSystem.Services.Interfaces;
 public interface IUsersService
 {
     Task<User> QueryUserById(int userId);
-    Task<User> QueryProfileAccount();
+    Task<UserDto> QueryUserProfile(int userId);
+    Task<User> QueryPersonalAccount();
     Task<List<User>> QueryAllUsers();
     Task<User?> QueryUserByEmail(string userEmail);
     Task<User> QueryOwner();

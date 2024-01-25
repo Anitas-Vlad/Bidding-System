@@ -18,12 +18,12 @@ public class UsersController : ControllerBase
     [HttpGet]
     [Route("/ProfileAccount")]
     public async Task<ActionResult<User>> GetProfileAccount() 
-        => await _usersService.QueryProfileAccount();
+        => await _usersService.QueryPersonalAccount();
 
     [HttpGet]
     [Route("/User-{userId}")]
-    public async Task<ActionResult<User>> GetUserById(int userId)
-        => await _usersService.QueryUserById(userId);
+    public async Task<ActionResult<UserDto>> SearchUser(int userId)
+        => await _usersService.QueryUserProfile(userId);
     
     [HttpGet]
     public async Task<ActionResult<List<User>>> GetAllUsers() 

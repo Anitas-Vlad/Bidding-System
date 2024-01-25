@@ -50,6 +50,7 @@ public class AuctionService : IAuctionService
         => await _context.Auctions
             .Include(auction => auction.Item)
             .Include(auction => auction.Bids)
+            .OrderBy(auction => auction.EndOfAuction)
             .ToListAsync();
 
     public async Task<Auction> CreateAuction(CreateAuctionRequest request)
@@ -59,7 +60,7 @@ public class AuctionService : IAuctionService
         if (item.AvailableForAuction == false)
             throw new ArgumentException("The Item is already in auction.");
 
-        var seller = await _userService.QueryProfileAccount();
+        var seller = await _userService.QueryPersonalAccount();
 
         if (item.UserId != seller.Id)
             throw new ArgumentException("You do not own this item.");
@@ -98,8 +99,8 @@ public class AuctionService : IAuctionService
         auction.IsBidAmountValid(request.Amount);
 
         var userProfileId = _userContextService.GetUserId();
-
         var user = await _userService.QueryUserById(userProfileId);
+
         var previouslyWinningBid = auction.GetWinningBid();
         var optionalExistingUserBid = auction.GetBidByUserId(userProfileId);
 
@@ -188,7 +189,7 @@ public class AuctionService : IAuctionService
 
         _userService.CheckIfUserOwnsBid(bid);
 
-        var user = await _userService.QueryProfileAccount();
+        var user = await _userService.QueryPersonalAccount();
 
         user.CancelBid(bid);
 
@@ -217,7 +218,7 @@ public class AuctionService : IAuctionService
         var auction = await QueryAuctionById(auctionId);
         var seller = await _userService.QueryUserById(auction.SellerId);
         var item = auction.Item;
-        
+
         var winningBid = auction.GetWinningBid();
         if (winningBid == null)
         {
@@ -225,6 +226,7 @@ public class AuctionService : IAuctionService
             _notificationService.HandleNotificationForUnsuccessfulSeller(auction, seller);
             return auction;
         }
+
         winningBid.Status = BidStatus.Win;
 
         var winningUser = await _userService.QueryUserById(winningBid.UserId);
@@ -234,7 +236,7 @@ public class AuctionService : IAuctionService
         _notificationService.HandleNotificationForWinner(auction, winningUser);
 
         await _userService.HandleLosingBids(auction);
-        
+
         await HandlePayment(auction, seller);
 
         winningUser.AddItem(item);

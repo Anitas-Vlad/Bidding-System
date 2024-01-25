@@ -1,6 +1,5 @@
 ﻿using BiddingSystem.Context;
 using BiddingSystem.Models;
-using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -98,8 +97,7 @@ public class NotificationService : INotificationService
     
     public async Task HandleNotificationForLoser(Auction auction, Bid bid)
     {
-        
-            var user = await _context.Users.FirstAsync(user => user.Id == bid.UserId);
+        var user = await _context.Users.FirstAsync(user => user.Id == bid.UserId);
             var notification = CreateBasicNotification(auction, user);
             notification.Description = "You lost in auction for the item: " + auction.GetItemName()+ 
                                        " and the amount of ______ has been unfrozen.";
