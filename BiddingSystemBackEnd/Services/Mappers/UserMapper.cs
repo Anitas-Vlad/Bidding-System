@@ -11,7 +11,7 @@ public class UserMapper : IUserMapper
             Id = user.Id,
             Bids = user.Bids,
             Items = user.Items,
-            UserName = user.UserName
+            UserName = user.Username
         };
 
     public List<UserDto> Map(List<User> users) 

@@ -2,6 +2,7 @@ using System.Text;
 using BiddingSystem.Context;
 using BiddingSystem.Services;
 using BiddingSystem.Services.Interfaces;
+using BiddingSystem.Services.Mappers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddScoped<IUserMapper, UserMapper>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(options =>

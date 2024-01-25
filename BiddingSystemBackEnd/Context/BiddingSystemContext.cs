@@ -34,7 +34,7 @@ public class BiddingSystemContext : DbContext
                 new User
                 {
                     Id = 1000,
-                    UserName = "Seller 1",
+                    Username = "Seller 1",
                     Email = "seller1@gmail.com",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Seller1."),
                     Credit = 10000
@@ -42,7 +42,7 @@ public class BiddingSystemContext : DbContext
                 new User
                 {
                     Id = 1001,
-                    UserName = "Buyer 1",
+                    Username = "Buyer 1",
                     Email = "buyer1@gmail.com",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Buyer11."),
                     Credit = 10000
@@ -50,7 +50,7 @@ public class BiddingSystemContext : DbContext
                 new User
                 {
                     Id = 1002,
-                    UserName = "Buyer 2",
+                    Username = "Buyer 2",
                     Email = "buyer2@gmail.com",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Buyer22."),
                     Credit = 10000
@@ -58,7 +58,7 @@ public class BiddingSystemContext : DbContext
                 new User
                 {
                     Id = 1003,
-                    UserName = "Buyer 3",
+                    Username = "Buyer 3",
                     Email = "buyer3@gmail.com",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Buyer33."),
                     Credit = 0
@@ -66,7 +66,7 @@ public class BiddingSystemContext : DbContext
                 new User
                 {
                     Id = 1004,
-                    UserName = "Owner",
+                    Username = "Owner",
                     Email = "owner@gmail.com",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Owner123."),
                     Credit = 0

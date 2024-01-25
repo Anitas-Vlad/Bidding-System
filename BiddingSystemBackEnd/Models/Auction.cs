@@ -14,7 +14,7 @@ public class Auction
     [Range(0, double.MaxValue, ErrorMessage = "The price cannot be a negative number.")]
     public double StartingPrice { get; set; }
 
-    public double CurrentPrice { get; set; }
+    [Required] public double CurrentPrice { get; set; }
     [Required] public double MinimumBidIncrement { get; set; }
     public List<Bid> Bids { get; set; } = new();
 
@@ -81,7 +81,4 @@ public class Auction
 
     public Bid? GetBidByUserId(int userId)
         => Bids.SingleOrDefault(bid => bid.UserId == userId);
-
-    public void SetWinningBidId(int winningBidId) 
-        => WinningBidId = winningBidId;
 }

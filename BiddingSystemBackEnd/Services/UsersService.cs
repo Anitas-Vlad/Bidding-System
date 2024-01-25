@@ -4,6 +4,7 @@ using BiddingSystem.Models;
 using BiddingSystem.Models.Enums;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
@@ -44,9 +45,22 @@ public class UsersService : IUsersService
         return user;
     }
 
-    public async Task<UserDto> QueryUserProfile(int userId)
+    private async Task<User?> QueryUserByUsername(string username)
     {
-        var user = await QueryUserById(userId);
+        var user = await _context.Users
+            .Include(user => user.Bids)
+            .Include(user => user.Items)
+            .Where(user => user.Username == username)
+            .FirstOrDefaultAsync();
+
+        if (user == null) throw new ArgumentException("User not found.");
+
+        return user;
+    }
+
+    public async Task<UserDto> QueryUserProfile(string username)
+    {
+        var user = await QueryUserByUsername(username);
         return _userMapper.Map(user);
     }
 
@@ -84,13 +98,14 @@ public class UsersService : IUsersService
     public async Task<User> CreateUser(RegisterRequest request)
     {
         await IsEmailValid(request.Email);
+        await IsUsernameValid(request.Username);
         IsPasswordValid(request.Password);
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
         var user = new User
         {
-            UserName = request.UserName,
+            Username = request.Username,
             PasswordHash = passwordHash,
             Email = request.Email
         };
@@ -131,8 +146,14 @@ public class UsersService : IUsersService
         if (!_mailPattern.IsMatch(userEmail))
             throw new ArgumentException("Please enter a valid email.");
 
-        if (await QueryUserByEmail(userEmail) != null)
-            throw new ArgumentException("Email in use.");
+        if (await _context.Users.AnyAsync(user => user.Email == userEmail))
+            throw new ArgumentException($"The email: \"{userEmail}\" in use.");
+    }
+
+    private async Task IsUsernameValid(string username)
+    {
+        if (await _context.Users.AnyAsync(user => user.Username == username))
+            throw new ArgumentException($"the username \"{username}\" is taken");
     }
 
     private static void IsPasswordValid(string userPassword)
@@ -161,7 +182,7 @@ public class UsersService : IUsersService
 
             var user = await QueryUserById(bid.UserId);
             user.LoseBid(bid);
-            
+
             await _notificationService.HandleNotificationForLoser(auction, bid);
 
             _context.Users.Update(user);

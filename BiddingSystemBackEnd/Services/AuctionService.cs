@@ -74,6 +74,7 @@ public class AuctionService : IAuctionService
             Item = item,
             SellerId = seller.Id,
             EndOfAuction = DateTime.Now.ToLocalTime().AddMinutes(2),
+            StartingPrice = request.StartingPrice,
             CurrentPrice = request.StartingPrice,
             MinimumBidIncrement = request.MinimumBidIncrement
         };
@@ -129,7 +130,8 @@ public class AuctionService : IAuctionService
 
         user.FreezeCredit(differenceBetweenOldAndNewAmount);
         existingUserBid.UpdateAmount(request.Amount);
-        auction.SetWinningBidId(existingUserBid.Id);
+        auction.CurrentPrice = request.Amount;
+        auction.WinningBidId = existingUserBid.Id;
         await SetBidStatus(existingUserBid, BidStatus.Winning);
 
         _notificationService.HandleNotificationForNewWinningBid(auction, user);
@@ -231,7 +233,7 @@ public class AuctionService : IAuctionService
 
         var winningUser = await _userService.QueryUserById(winningBid.UserId);
         winningUser.PayWithFrozenCredit(winningBid.Amount);
-        auction.SetWinningBidId(winningBid.Id);
+        auction.WinningBidId = winningBid.Id;
 
         _notificationService.HandleNotificationForWinner(auction, winningUser);
 
