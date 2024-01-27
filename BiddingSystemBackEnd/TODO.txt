@@ -15,8 +15,7 @@ TODO - MUST :
     * In the UsersController, create a SearchUserProfileById() that does not show too much information, such as Credit/FrozenCredit
 ? --- Check into AuctionService.SetBiddingStatus(). Is it really needed?
     * Use the BidStatus.Cancelled Enum instead of removing it from the database for a better user history.
-    * Add User.ActiveAuctions as a List<Auction> for a seller needs access to an auction
-    * Notification for the owner(aka boss of the website) that an auction has ended successfully and the tax they received from the seller.
+    * Notification for winner, Total amount paid must include the taxes.
 
 TODO - DONE :
  
@@ -68,3 +67,6 @@ and delete the List<Bids> losingBids.
     * Make the admin user and the logics between tax and the seller.
     * The seller is taxed a percentage by the AuctionWebsite and goes into the Website's Account WHICH SHOULD BE AN ADMIN USER.
     * for some reason, User got a notification that they paid 150, but the bet was 180. CHECK WHY!
+    * Notification to Owner for successfully ended auction.
+    * Add User.Auctions as a List<Auction> for a seller needs access to an auction
+    * Notification for the owner(aka boss of the website) that an auction has ended successfully and the tax they received from the seller.

@@ -12,14 +12,30 @@ public class User
     [Required] public List<Bid> Bids { get; set; } = new();
     [Required] public List<Item> Items { get; set; } = new();
     [Required] public List<Notification> Notifications { get; set; } = new();
+    [Required] public List<Auction> Auctions { get; set; } = new();
     public double Credit { get; set; }
     public double FrozenCredit { get; set; }
 
-    public void AddItem(Item item) => Items.Add(item);
+    public void AddItem(Item item)
+        => Items.Add(item);
 
-    private void RemoveSoldItem(Item item) => Items.Remove(item);
+    public void AddAuction(Auction auction)
+        => Auctions.Add(auction);
 
-    private void GetPaid(double amount) => Credit += amount;
+    private void RemoveSoldItem(Item item)
+        => Items.Remove(item);
+
+    private void GetPaid(double amount)
+        => Credit += amount;
+
+    //TODO maybe not needed.
+    public Auction GetAuctionById(int auctionId)
+    {
+        var auction = Auctions.Find(auction => auction.Id == auctionId);
+        if (auction == null)
+            throw new ArgumentException("Auction not found.");
+        return auction;
+    }
 
     public void Sell(Auction auction, double taxes)
     {

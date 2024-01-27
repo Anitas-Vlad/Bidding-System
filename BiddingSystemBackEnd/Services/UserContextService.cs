@@ -18,9 +18,7 @@ public class UserContextService : IUserContextService
         var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
 
         if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
-        {
             throw new InvalidOperationException("Invalid or missing user ID claim.");
-        }
 
         return userId;
     }

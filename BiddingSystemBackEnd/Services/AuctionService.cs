@@ -80,6 +80,7 @@ public class AuctionService : IAuctionService
         };
 
         item.AvailableForAuction = false;
+        seller.AddAuction(auction);
 
         _notificationService.HandleNotificationForSuccessfullyAddedAuction(auction, seller);
 
@@ -173,7 +174,7 @@ public class AuctionService : IAuctionService
     {
         bid.Status = status;
         _context.Bids.Update(bid);
-        await _context.SaveChangesAsync();
+        //TODO  await _context.SaveChangesAsync(); Check if needed.
     }
 
     private async Task UpdateDatabase(Auction auction, User user)
@@ -233,17 +234,19 @@ public class AuctionService : IAuctionService
 
         var winningUser = await _userService.QueryUserById(winningBid.UserId);
         winningUser.PayWithFrozenCredit(winningBid.Amount);
-        auction.WinningBidId = winningBid.Id;
 
-        _notificationService.HandleNotificationForWinner(auction, winningUser);
-
-        await _userService.HandleLosingBids(auction);
-
-        await HandlePayment(auction, seller);
-
+        var taxes = auction.CurrentPrice / 20;
+        
+        await HandleLosingBids(auction);
+        await HandlePayment(auction, seller, taxes);
+        await _notificationService.HandleNotificationForAppOwner(auction, taxes);
+        
         winningUser.AddItem(item);
         item.AvailableForAuction = true;
-
+        
+        _notificationService.HandleNotificationForSuccessfulSeller(auction, seller, taxes);
+        _notificationService.HandleNotificationForWinner(auction, winningUser, taxes);
+        
         _context.Items.Update(item);
         _context.Bids.Update(winningBid);
         _context.Users.Update(winningUser);
@@ -252,13 +255,29 @@ public class AuctionService : IAuctionService
         return auction;
     }
 
-    private async Task HandlePayment(Auction auction, User seller)
+    private async Task HandlePayment(Auction auction, User seller, double taxes)
     {
-        var ownerAccount = await _userService.QueryOwner();
-        var taxes = auction.CurrentPrice / 20;
+        var appOwner = await _userService.QueryOwner();
 
         seller.Sell(auction, taxes);
-        ownerAccount.Credit += taxes;
+        appOwner.Credit += taxes;
+    }
+
+    public async Task HandleLosingBids(Auction auction)
+    {
+        var losingBids = auction.Bids.Where(bid => bid.Status == BidStatus.Losing);
+        foreach (var bid in losingBids)
+        {
+            bid.Status = BidStatus.Loss;
+
+            var user = await _userService.QueryUserById(bid.UserId);
+            user.LoseBid(bid);
+
+            await _notificationService.HandleNotificationForLoser(auction, bid);
+
+            _context.Users.Update(user);
+            _context.Bids.Update(bid);
+        }
     }
 
     private async Task HandleNoWinningBidCase(Item item)
