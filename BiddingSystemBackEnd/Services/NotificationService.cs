@@ -9,12 +9,15 @@ public class NotificationService : INotificationService
 {
     private readonly BiddingSystemContext _context;
     private readonly IUserContextService _userContextService;
+    private readonly IUsersService _usersService;
 
-    public NotificationService(BiddingSystemContext context, IUserContextService userContextService)
+    public NotificationService(BiddingSystemContext context, IUserContextService userContextService, IUsersService usersService)
     {
         _context = context;
         _userContextService = userContextService;
+        _usersService = usersService;
     }
+    
 
     public async Task<List<Notification>> QueryProfileNotifications()
     {
@@ -65,13 +68,13 @@ public class NotificationService : INotificationService
         _context.Notifications.Add(notification);
     }
     
-    public void HandleNotificationForWinner(Auction auction, User user)
+    public void HandleNotificationForWinner(Auction auction, User user, double taxes)
     {
         var notification = CreateBasicNotification(auction, user);
 
         notification.Description =
             $"Congratulations, you have won the item: {auction.GetItemName()}," +
-            $" and you have paid a total of: {auction.CurrentPrice}.";
+            $" and you have paid: {auction.CurrentPrice}-bid amount + {taxes}-taxes.";
 
         user.ReceiveNotification(notification);
 
@@ -79,21 +82,20 @@ public class NotificationService : INotificationService
         _context.Notifications.Add(notification);
     }
     
-    //TODO Maybe for Losers and List<User> is needed.
-    public async Task HandleNotificationForLosers(Auction auction)
-    {
-        var bids = auction.Bids;
-
-        foreach (var bid in bids)
-        {
-            var user = await _context.Users.FirstAsync(user => user.Id == bid.UserId);
-            var notification = CreateBasicNotification(auction, user);
-            notification.Description = "";
-
-            user.ReceiveNotification(notification);
-            _context.Notifications.Add(notification);
-        }
-    }
+    // public async Task HandleNotificationForLosers(Auction auction)
+    // {
+    //     var bids = auction.Bids;
+    //
+    //     foreach (var bid in bids)
+    //     {
+    //         var user = await _context.Users.FirstAsync(user => user.Id == bid.UserId);
+    //         var notification = CreateBasicNotification(auction, user);
+    //         notification.Description = "";
+    //
+    //         user.ReceiveNotification(notification);
+    //         _context.Notifications.Add(notification);
+    //     }
+    // }
     
     public async Task HandleNotificationForLoser(Auction auction, Bid bid)
     {
@@ -106,13 +108,13 @@ public class NotificationService : INotificationService
             _context.Notifications.Add(notification);
     }
     
-    public void HandleNotificationForSuccessfulSeller(Auction auction, User user)
+    public void HandleNotificationForSuccessfulSeller(Auction auction, User user, double taxes)
     {
         var notification = CreateBasicNotification(auction, user);
 
         notification.Description =
             $"Congratulations! The item: {auction.GetItemName()} " +
-            $"was sold at auction with the price of: {auction.CurrentPrice}.";
+            $"was sold at auction with the price of: {auction.CurrentPrice} and you paid 5% taxes-{taxes}";
 
         user.ReceiveNotification(notification);
         _context.Notifications.Add(notification);
@@ -125,6 +127,19 @@ public class NotificationService : INotificationService
         notification.Description = $"The item: {auction.GetItemName()} was not sold at auction.";
 
         user.ReceiveNotification(notification);
+        _context.Notifications.Add(notification);
+    }
+    
+    public async Task HandleNotificationForAppOwner(Auction auction, double taxes)
+    {
+        var owner = await _usersService.QueryOwner();
+        var notification = CreateBasicNotification(auction, owner);
+
+        notification.Description =
+            $"The item: {auction.GetItemName()} " +
+            $"was sold at auction with the price of: {auction.CurrentPrice}. and the seller payed taxes of: {taxes}.";
+
+        owner.ReceiveNotification(notification);
         _context.Notifications.Add(notification);
     }
 }

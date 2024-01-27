@@ -15,5 +15,4 @@ public interface IUsersService
     Task<double> AddCredit(AddCreditRequest request);
     Task<User> AddItem(CreateItemRequest request);
     void CheckIfUserOwnsBid(Bid bid);
-    Task HandleLosingBids(Auction auction);
 }

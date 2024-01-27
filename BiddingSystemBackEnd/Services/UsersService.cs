@@ -1,12 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using BiddingSystem.Context;
 using BiddingSystem.Models;
-using BiddingSystem.Models.Enums;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace BiddingSystem.Services;
 
@@ -17,18 +14,16 @@ public class UsersService : IUsersService
     private static Regex _passwordPattern;
     private readonly IItemService _itemService;
     private readonly IUserContextService _userContextService;
-    private readonly INotificationService _notificationService;
     private readonly IUserMapper _userMapper;
 
     public UsersService(BiddingSystemContext context, IItemService itemService,
-        IUserContextService userContextService, INotificationService notificationService, IUserMapper userMapper)
+        IUserContextService userContextService, IUserMapper userMapper)
     {
         _context = context;
         _itemService = itemService;
         _mailPattern = new("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$");
         _passwordPattern = new("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
         _userContextService = userContextService;
-        _notificationService = notificationService;
         _userMapper = userMapper;
     }
 
@@ -45,6 +40,7 @@ public class UsersService : IUsersService
         return user;
     }
 
+    //TODO Do not include every information about the account. UserDto
     private async Task<User?> QueryUserByUsername(string username)
     {
         var user = await _context.Users
@@ -52,7 +48,7 @@ public class UsersService : IUsersService
             .Include(user => user.Items)
             .Where(user => user.Username == username)
             .FirstOrDefaultAsync();
-
+        
         if (user == null) throw new ArgumentException("User not found.");
 
         return user;
@@ -71,6 +67,7 @@ public class UsersService : IUsersService
         var user = await _context.Users
             .Include(user => user.Bids)
             .Include(user => user.Items)
+            .Include(user => user.Auctions)
             .Where(user => user.Id == userId)
             .FirstOrDefaultAsync();
 
@@ -171,22 +168,5 @@ public class UsersService : IUsersService
 
         if (!isSameUserId)
             throw new InvalidOperationException("Invalid user ID claim.");
-    }
-
-    public async Task HandleLosingBids(Auction auction)
-    {
-        var losingBids = auction.Bids.Where(bid => bid.Status == BidStatus.Losing);
-        foreach (var bid in losingBids)
-        {
-            bid.Status = BidStatus.Loss;
-
-            var user = await QueryUserById(bid.UserId);
-            user.LoseBid(bid);
-
-            await _notificationService.HandleNotificationForLoser(auction, bid);
-
-            _context.Users.Update(user);
-            _context.Bids.Update(bid);
-        }
     }
 }
