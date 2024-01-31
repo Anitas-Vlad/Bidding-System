@@ -8,14 +8,20 @@ TODO - NICE TO HAVE :
     * Set notifications to Seen. Check if it is optimal to do it through an endpoint that accepts a List<Id> that would 
 be sent from the FrontEnd.
     * Add interests to users so that when an auction for an item related to their interests is created, the users are notified
-
+    * XUnit Tests
+    
 TODO - MUST : 
 
     * AdminsController
     * In the UsersController, create a SearchUserProfileById() that does not show too much information, such as Credit/FrozenCredit
 ? --- Check into AuctionService.SetBiddingStatus(). Is it really needed?
     * Use the BidStatus.Cancelled Enum instead of removing it from the database for a better user history.
-    * Notification for winner, Total amount paid must include the taxes.
+    * Verify if CancelBid() works properly.
+!!!!* CancelBid() somehow makes the frozen credit go negative.
+    *Verify if cancelling a losing bid works ok.
+    *Verify if cancelling a winning bid works ok.
+    * Notification for cancelling a bid.
+    * Notification for when someone cancels their bid and yours becomes the winning one.
 
 TODO - DONE :
  
@@ -70,3 +76,4 @@ and delete the List<Bids> losingBids.
     * Notification to Owner for successfully ended auction.
     * Add User.Auctions as a List<Auction> for a seller needs access to an auction
     * Notification for the owner(aka boss of the website) that an auction has ended successfully and the tax they received from the seller.
+    * Notification for winner, Total amount paid must include the taxes.

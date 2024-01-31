@@ -1,5 +1,4 @@
 ﻿using BiddingSystem.Models;
-using BiddingSystem.Models.Requests;
 
 namespace BiddingSystem.Services.Interfaces;
 
@@ -14,4 +13,6 @@ public interface INotificationService
     void HandleNotificationForUnsuccessfulSeller(Auction auction, User user);
     Task HandleNotificationForLoser(Auction auction, Bid bid);
     Task HandleNotificationForAppOwner(Auction auction, double taxes);
+    void HandleNotificationForCanceledBid(Auction auction, User user);
+    void HandleNotificationForUpgradeToWinningBid(Auction auction, User user);
 }

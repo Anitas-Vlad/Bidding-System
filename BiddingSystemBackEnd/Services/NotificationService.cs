@@ -142,4 +142,27 @@ public class NotificationService : INotificationService
         owner.ReceiveNotification(notification);
         _context.Notifications.Add(notification);
     }
+
+    public void HandleNotificationForCanceledBid(Auction auction, User user)
+    {
+        var notification = CreateBasicNotification(auction, user);
+
+        notification.Description =
+            $"You have successfully canceled your bid at the auction for item: {auction.GetItemName()}"
+            + $"and the credit of {auction.GetBidAmountByUserId(user.Id)} has been unfrozen.";
+
+        user.ReceiveNotification(notification);
+        _context.Notifications.Add(notification);
+    }
+    
+    public void HandleNotificationForUpgradeToWinningBid(Auction auction, User user)
+    {
+        var notification = CreateBasicNotification(auction, user);
+
+        notification.Description =
+            $"Someone canceled their bid and now yours of {auction.GetBidAmountByUserId(user.Id)} is the winning bid.";
+
+        user.ReceiveNotification(notification);
+        _context.Notifications.Add(notification);
+    }
 }

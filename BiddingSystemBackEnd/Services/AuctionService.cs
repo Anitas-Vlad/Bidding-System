@@ -1,12 +1,10 @@
-﻿using System.Security.Claims;
-using BiddingSystem.Context;
+﻿using BiddingSystem.Context;
 using BiddingSystem.Models;
 using BiddingSystem.Models.Enums;
 using BiddingSystem.Models.Requests;
 using BiddingSystem.Services.Interfaces;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BiddingSystem.Services;
 
@@ -181,7 +179,7 @@ public class AuctionService : IAuctionService
     {
         _context.Users.Update(user);
         _context.Auctions.Update(auction);
-
+        
         await _context.SaveChangesAsync();
     }
 
@@ -198,14 +196,20 @@ public class AuctionService : IAuctionService
 
         if (!auction.CheckIfBidToRemoveIsTheHighest(bid))
         {
-            auction.RemoveLosingBid(bid);
-            bid.Status = BidStatus.Cancelled;
+            _notificationService.HandleNotificationForCanceledBid(auction, user);
+            
+            //TODO Check if needed // auction.RemoveLosingBid(bid);
         }
         else
         {
-            var optionalNewWinningBid = auction.RemoveWinningBid(bid);
+            var optionalNewWinningBid = auction.SetNewHighestBid();
             if (optionalNewWinningBid != null)
+            {
+                var newWinner = await _userService.QueryUserById(optionalNewWinningBid.UserId);
+                _notificationService.HandleNotificationForUpgradeToWinningBid(auction, newWinner);
+                
                 _context.Bids.Update(optionalNewWinningBid);
+            }
         }
 
         _context.Users.Update(user);
@@ -227,6 +231,7 @@ public class AuctionService : IAuctionService
         {
             await HandleNoWinningBidCase(item);
             _notificationService.HandleNotificationForUnsuccessfulSeller(auction, seller);
+            await _context.SaveChangesAsync();
             return auction;
         }
 
@@ -236,17 +241,17 @@ public class AuctionService : IAuctionService
         winningUser.PayWithFrozenCredit(winningBid.Amount);
 
         var taxes = auction.CurrentPrice / 20;
-        
+
         await HandleLosingBids(auction);
         await HandlePayment(auction, seller, taxes);
         await _notificationService.HandleNotificationForAppOwner(auction, taxes);
-        
+
         winningUser.AddItem(item);
         item.AvailableForAuction = true;
-        
+
         _notificationService.HandleNotificationForSuccessfulSeller(auction, seller, taxes);
         _notificationService.HandleNotificationForWinner(auction, winningUser, taxes);
-        
+
         _context.Items.Update(item);
         _context.Bids.Update(winningBid);
         _context.Users.Update(winningUser);
@@ -265,7 +270,7 @@ public class AuctionService : IAuctionService
 
     public async Task HandleLosingBids(Auction auction)
     {
-        var losingBids = auction.Bids.Where(bid => bid.Status == BidStatus.Losing);
+        var losingBids = auction.GetLosingBids();
         foreach (var bid in losingBids)
         {
             bid.Status = BidStatus.Loss;

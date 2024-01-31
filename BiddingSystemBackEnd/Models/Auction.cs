@@ -45,24 +45,33 @@ public class Auction
                 "The bidding amount is not valid. Check if you respect the MinimumBidIncrement");
     }
 
+    public List<Bid> GetLosingBids()
+        => Bids.Where(bid => bid.Status == BidStatus.Losing).ToList();
+
     public string GetItemName()
         => Item.Name;
 
     public bool CheckIfBidToRemoveIsTheHighest(Bid bid)
         => bid.Id == WinningBidId;
 
-    public void RemoveLosingBid(Bid bid)
+    public void RemoveLosingBid(Bid bid) // TODO check if needed
         => Bids.Remove(bid);
 
-    public Bid? RemoveWinningBid(Bid bid)
+    public Bid? RemoveWinningBid(Bid bid) // TODO check if needed
     {
-        Bids.Remove(bid);
+        // Bids.Remove(bid); //TODO check if needed
         return SetNewHighestBid();
     }
 
-    private Bid? SetNewHighestBid()
+    public double GetBidAmountByUserId(int userId) =>
+        Bids.Where(bid => bid.UserId == userId)
+            .Select(bid => bid.Amount)
+            .FirstOrDefault();
+
+    public Bid? SetNewHighestBid()
     {
-        var secondHighestBid = Bids.MaxBy(bid => bid.Amount);
+        var secondHighestBid = GetLosingBids().
+            MaxBy(bid => bid.Amount);
 
         if (secondHighestBid == null)
         {
