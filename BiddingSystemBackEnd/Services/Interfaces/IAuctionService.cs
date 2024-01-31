@@ -11,5 +11,5 @@ public interface IAuctionService
     Task<Auction> PlaceBid(CreateBidRequest request);
     Task<List<Auction>> QueryAllAuctions();
     Task<Auction> CancelBid(int bidId);
-    Task HandleLosingBids(Auction auction);
+    //TODO Task HandleLosingBids(Auction auction);
 }

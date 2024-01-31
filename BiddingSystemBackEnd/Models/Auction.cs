@@ -32,7 +32,7 @@ public class Auction
 
     private double MinimumBidAmount()
     {
-        if (!Bids.Any())
+        if (!Bids.Any() || Bids.All(bid => bid.Status == BidStatus.Cancelled))
             return CurrentPrice;
 
         return CurrentPrice + MinimumBidIncrement;

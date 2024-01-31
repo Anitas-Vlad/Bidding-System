@@ -11,14 +11,14 @@ public class NotificationService : INotificationService
     private readonly IUserContextService _userContextService;
     private readonly IUsersService _usersService;
 
-    public NotificationService(BiddingSystemContext context, IUserContextService userContextService, IUsersService usersService)
+    public NotificationService(BiddingSystemContext context, IUserContextService userContextService,
+        IUsersService usersService)
     {
         _context = context;
         _userContextService = userContextService;
         _usersService = usersService;
     }
     
-
     public async Task<List<Notification>> QueryProfileNotifications()
     {
         var userProfileId = _userContextService.GetUserId();
@@ -67,59 +67,44 @@ public class NotificationService : INotificationService
         user.ReceiveNotification(notification);
         _context.Notifications.Add(notification);
     }
-    
-    public void HandleNotificationForWinner(Auction auction, User user, double taxes)
+
+    public void HandleNotificationForWinner(Auction auction, User user)
     {
         var notification = CreateBasicNotification(auction, user);
 
         notification.Description =
             $"Congratulations, you have won the item: {auction.GetItemName()}," +
-            $" and you have paid: {auction.CurrentPrice}-bid amount + {taxes}-taxes.";
+            $" and you have paid: {auction.CurrentPrice}.";
 
         user.ReceiveNotification(notification);
 
         user.ReceiveNotification(notification);
         _context.Notifications.Add(notification);
     }
-    
-    // public async Task HandleNotificationForLosers(Auction auction)
-    // {
-    //     var bids = auction.Bids;
-    //
-    //     foreach (var bid in bids)
-    //     {
-    //         var user = await _context.Users.FirstAsync(user => user.Id == bid.UserId);
-    //         var notification = CreateBasicNotification(auction, user);
-    //         notification.Description = "";
-    //
-    //         user.ReceiveNotification(notification);
-    //         _context.Notifications.Add(notification);
-    //     }
-    // }
-    
-    public async Task HandleNotificationForLoser(Auction auction, Bid bid)
+
+    public async Task HandleNotificationForLoser(Auction auction, Bid bid) //TODO the frozen amount
     {
         var user = await _context.Users.FirstAsync(user => user.Id == bid.UserId);
-            var notification = CreateBasicNotification(auction, user);
-            notification.Description = "You lost in auction for the item: " + auction.GetItemName()+ 
-                                       " and the amount of ______ has been unfrozen.";
+        var notification = CreateBasicNotification(auction, user);
+        notification.Description = $"You lost in auction for the item: {auction.GetItemName()}," +
+                                   $" and the amount of {bid.Amount} has been unfrozen.";
 
-            user.ReceiveNotification(notification);
-            _context.Notifications.Add(notification);
+        user.ReceiveNotification(notification);
+        _context.Notifications.Add(notification);
     }
-    
+
     public void HandleNotificationForSuccessfulSeller(Auction auction, User user, double taxes)
     {
         var notification = CreateBasicNotification(auction, user);
 
         notification.Description =
             $"Congratulations! The item: {auction.GetItemName()} " +
-            $"was sold at auction with the price of: {auction.CurrentPrice} and you paid 5% taxes-{taxes}";
+            $"was sold at auction with the price of: {auction.CurrentPrice} and you paid 5% taxes: {taxes}";
 
         user.ReceiveNotification(notification);
         _context.Notifications.Add(notification);
     }
-    
+
     public void HandleNotificationForUnsuccessfulSeller(Auction auction, User user)
     {
         var notification = CreateBasicNotification(auction, user);
@@ -129,7 +114,7 @@ public class NotificationService : INotificationService
         user.ReceiveNotification(notification);
         _context.Notifications.Add(notification);
     }
-    
+
     public async Task HandleNotificationForAppOwner(Auction auction, double taxes)
     {
         var owner = await _usersService.QueryOwner();
@@ -154,7 +139,7 @@ public class NotificationService : INotificationService
         user.ReceiveNotification(notification);
         _context.Notifications.Add(notification);
     }
-    
+
     public void HandleNotificationForUpgradeToWinningBid(Auction auction, User user)
     {
         var notification = CreateBasicNotification(auction, user);

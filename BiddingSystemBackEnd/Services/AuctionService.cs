@@ -71,7 +71,7 @@ public class AuctionService : IAuctionService
         {
             Item = item,
             SellerId = seller.Id,
-            EndOfAuction = DateTime.Now.ToLocalTime().AddMinutes(2),
+            EndOfAuction = DateTime.Now.ToLocalTime().AddMinutes(5),
             StartingPrice = request.StartingPrice,
             CurrentPrice = request.StartingPrice,
             MinimumBidIncrement = request.MinimumBidIncrement
@@ -179,7 +179,7 @@ public class AuctionService : IAuctionService
     {
         _context.Users.Update(user);
         _context.Auctions.Update(auction);
-        
+
         await _context.SaveChangesAsync();
     }
 
@@ -193,23 +193,15 @@ public class AuctionService : IAuctionService
         var user = await _userService.QueryPersonalAccount();
 
         user.CancelBid(bid);
+        _notificationService.HandleNotificationForCanceledBid(auction, user);
 
-        if (!auction.CheckIfBidToRemoveIsTheHighest(bid))
+        var optionalNewWinningBid = auction.SetNewHighestBid();
+        if (optionalNewWinningBid != null)
         {
-            _notificationService.HandleNotificationForCanceledBid(auction, user);
-            
-            //TODO Check if needed // auction.RemoveLosingBid(bid);
-        }
-        else
-        {
-            var optionalNewWinningBid = auction.SetNewHighestBid();
-            if (optionalNewWinningBid != null)
-            {
-                var newWinner = await _userService.QueryUserById(optionalNewWinningBid.UserId);
-                _notificationService.HandleNotificationForUpgradeToWinningBid(auction, newWinner);
-                
-                _context.Bids.Update(optionalNewWinningBid);
-            }
+            var newWinner = await _userService.QueryUserById(optionalNewWinningBid.UserId);
+            _notificationService.HandleNotificationForUpgradeToWinningBid(auction, newWinner);
+
+            _context.Bids.Update(optionalNewWinningBid);
         }
 
         _context.Users.Update(user);
@@ -250,7 +242,7 @@ public class AuctionService : IAuctionService
         item.AvailableForAuction = true;
 
         _notificationService.HandleNotificationForSuccessfulSeller(auction, seller, taxes);
-        _notificationService.HandleNotificationForWinner(auction, winningUser, taxes);
+        _notificationService.HandleNotificationForWinner(auction, winningUser);
 
         _context.Items.Update(item);
         _context.Bids.Update(winningBid);
@@ -273,8 +265,6 @@ public class AuctionService : IAuctionService
         var losingBids = auction.GetLosingBids();
         foreach (var bid in losingBids)
         {
-            bid.Status = BidStatus.Loss;
-
             var user = await _userService.QueryUserById(bid.UserId);
             user.LoseBid(bid);
 
