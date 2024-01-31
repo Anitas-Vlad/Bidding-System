@@ -51,7 +51,7 @@ namespace BiddingSystem.Migrations
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("WinningBidId")
+                    b.Property<int?>("WinningBidId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -61,6 +61,52 @@ namespace BiddingSystem.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Auctions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1000,
+                            CurrentPrice = 100.0,
+                            EndOfAuction = new DateTime(2024, 5, 10, 20, 41, 57, 650, DateTimeKind.Utc).AddTicks(2697),
+                            ItemId = 1000,
+                            MinimumBidIncrement = 10.0,
+                            SellerId = 1000,
+                            StartingPrice = 100.0,
+                            WinningBidId = 1000
+                        },
+                        new
+                        {
+                            Id = 1001,
+                            CurrentPrice = 150.0,
+                            EndOfAuction = new DateTime(2024, 4, 30, 20, 41, 57, 650, DateTimeKind.Utc).AddTicks(2708),
+                            ItemId = 1001,
+                            MinimumBidIncrement = 15.0,
+                            SellerId = 1000,
+                            StartingPrice = 150.0,
+                            WinningBidId = 1001
+                        },
+                        new
+                        {
+                            Id = 1002,
+                            CurrentPrice = 200.0,
+                            EndOfAuction = new DateTime(2024, 5, 10, 20, 41, 57, 650, DateTimeKind.Utc).AddTicks(2710),
+                            ItemId = 1002,
+                            MinimumBidIncrement = 20.0,
+                            SellerId = 1000,
+                            StartingPrice = 200.0,
+                            WinningBidId = 1002
+                        },
+                        new
+                        {
+                            Id = 1003,
+                            CurrentPrice = 200.0,
+                            EndOfAuction = new DateTime(2024, 5, 10, 20, 41, 57, 650, DateTimeKind.Utc).AddTicks(2711),
+                            ItemId = 1003,
+                            MinimumBidIncrement = 20.0,
+                            SellerId = 1000,
+                            StartingPrice = 200.0,
+                            WinningBidId = 1002
+                        });
                 });
 
             modelBuilder.Entity("BiddingSystem.Models.Bid", b =>
@@ -90,6 +136,40 @@ namespace BiddingSystem.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Bids");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1000,
+                            Amount = 120.0,
+                            AuctionId = 1000,
+                            Status = 0,
+                            UserId = 1001
+                        },
+                        new
+                        {
+                            Id = 1001,
+                            Amount = 170.0,
+                            AuctionId = 1001,
+                            Status = 0,
+                            UserId = 1003
+                        },
+                        new
+                        {
+                            Id = 1002,
+                            Amount = 220.0,
+                            AuctionId = 1002,
+                            Status = 0,
+                            UserId = 1002
+                        },
+                        new
+                        {
+                            Id = 1003,
+                            Amount = 100.0,
+                            AuctionId = 1002,
+                            Status = 0,
+                            UserId = 1001
+                        });
                 });
 
             modelBuilder.Entity("BiddingSystem.Models.Item", b =>
@@ -120,23 +200,44 @@ namespace BiddingSystem.Migrations
                         new
                         {
                             Id = 1000,
-                            AvailableForAuction = true,
+                            AvailableForAuction = false,
                             Name = "Napoleon's Favorite Hat",
                             UserId = 1000
                         },
                         new
                         {
                             Id = 1001,
-                            AvailableForAuction = true,
+                            AvailableForAuction = false,
                             Name = "McDonald's Forever Free Nuggets",
                             UserId = 1000
                         },
                         new
                         {
                             Id = 1002,
-                            AvailableForAuction = true,
+                            AvailableForAuction = false,
                             Name = "Eiffel Tower Top Light",
-                            UserId = 1002
+                            UserId = 1000
+                        },
+                        new
+                        {
+                            Id = 1003,
+                            AvailableForAuction = true,
+                            Name = "Test Item 1",
+                            UserId = 1000
+                        },
+                        new
+                        {
+                            Id = 1004,
+                            AvailableForAuction = true,
+                            Name = "Test Item 2",
+                            UserId = 1000
+                        },
+                        new
+                        {
+                            Id = 1005,
+                            AvailableForAuction = true,
+                            Name = "Test Item 3",
+                            UserId = 1000
                         });
                 });
 
@@ -206,19 +307,19 @@ namespace BiddingSystem.Migrations
                         new
                         {
                             Id = 1000,
-                            Credit = 10000.0,
+                            Credit = 500.0,
                             Email = "seller1@gmail.com",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$LdtBjpQFPjfcv43wuKKu1Ossj7xlIt8CIc7SCOOwPQd2EMGcHTF6S",
+                            PasswordHash = "$2a$11$CYcoJP22/Qr2j3D/QrpNze70NeUlqKp.K2oMoryqXCg2k/WzxO6Q.",
                             Username = "Seller 1"
                         },
                         new
                         {
                             Id = 1001,
-                            Credit = 10000.0,
+                            Credit = 5000.0,
                             Email = "buyer1@gmail.com",
-                            FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$gwoVj7C2vGBwPPpQSoKU2OBtvQU/SbTtY9r39HmbDiwbqZtFy/JJ2",
+                            FrozenCredit = 220.0,
+                            PasswordHash = "$2a$11$lYLWpgw3Hh3MDc0NZ7UFJ.X./.sGPqPr51Uv78zWe4lYHA6wIcHlW",
                             Username = "Buyer 1"
                         },
                         new
@@ -226,17 +327,17 @@ namespace BiddingSystem.Migrations
                             Id = 1002,
                             Credit = 10000.0,
                             Email = "buyer2@gmail.com",
-                            FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$ApwUYTwoXNIKqCqNgwZI3.LfRxLLF0Ssse9PwxQh9xVbMBSKB7v92",
+                            FrozenCredit = 220.0,
+                            PasswordHash = "$2a$11$JB.Eu0v/1Itl9WCyDrbeuO900/7PcPHidgQ6IR.F7daAGqtc4eJpq",
                             Username = "Buyer 2"
                         },
                         new
                         {
                             Id = 1003,
-                            Credit = 0.0,
+                            Credit = 1500.0,
                             Email = "buyer3@gmail.com",
-                            FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$.FRwCx7KzLiGpSyyRVFg7eYqZa.3z7wyCfLf7.fDwzg6GSmqL70KO",
+                            FrozenCredit = 170.0,
+                            PasswordHash = "$2a$11$aqceb0ttLKAzayY82HfTB.yTCwH8hVR5v.9lxYGnD8wNIFai.EXmW",
                             Username = "Buyer 3"
                         },
                         new
@@ -245,7 +346,7 @@ namespace BiddingSystem.Migrations
                             Credit = 0.0,
                             Email = "owner@gmail.com",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$PjZDhP3OHQ6XhCcIMB8eT.3S8UA9j0WTuvHB3loUKOYKwC1Y.UpNq",
+                            PasswordHash = "$2a$11$zBzOUdQOwC1Ly03MD/DlsueOjzUdHvzjPPnLytByVjXRcsNrSQjf2",
                             Username = "Owner"
                         });
                 });

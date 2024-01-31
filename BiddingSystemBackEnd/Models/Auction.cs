@@ -6,6 +6,7 @@ namespace BiddingSystem.Models;
 public class Auction
 {
     public int Id { get; set; }
+    public int ItemId { get; set; }
     [Required] public Item Item { get; set; }
     [Required] public int SellerId { get; set; }
     [Required] public DateTime EndOfAuction { get; set; }
@@ -18,7 +19,7 @@ public class Auction
     [Required] public double MinimumBidIncrement { get; set; }
     public List<Bid> Bids { get; set; } = new();
 
-    public int WinningBidId { get; set; }
+    public int? WinningBidId { get; set; }
 
     public void AddBid(Bid bid)
     {

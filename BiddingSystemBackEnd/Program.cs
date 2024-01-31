@@ -8,15 +8,32 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Hangfire;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<BiddingSystemContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("bidding-system-context") ??
-                         throw new InvalidOperationException("Connection string 'bidding-system-context' not found.")));
+if (builder.Environment.IsDevelopment())
+{
+    // Use in-memory database for testing
+    builder.Services.AddDbContext<BiddingSystemContext>(options =>
+        options.UseInMemoryDatabase("TestDatabase"));
+    // builder.Services.AddDbContext<BiddingSystemContext>(options =>
+    //     options.UseSqlServer(builder.Configuration.GetConnectionString("bidding-system-tests") ??
+    //                          throw new InvalidOperationException(
+    //                              "Connection string 'bidding-system-context' not found.")));
+}
+else
+{
+    // Use SQL Server for production
+    builder.Services.AddDbContext<BiddingSystemContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("bidding-system-context") ??
+                             throw new InvalidOperationException("Connection string 'bidding-system-context' not found.")));
+}
+
+// builder.Services.AddDbContext<BiddingSystemContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("bidding-system-context") ??
+//                          throw new InvalidOperationException("Connection string 'bidding-system-context' not found.")));
 
 builder.Services.AddHangfire(config =>
     config.UseSqlServerStorage(builder.Configuration.GetConnectionString("bidding-system-context") ??

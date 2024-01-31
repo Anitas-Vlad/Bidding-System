@@ -15,11 +15,10 @@ public class AuctionService : IAuctionService
     private readonly IBiddingService _biddingService;
     private readonly IUsersService _userService;
     private readonly INotificationService _notificationService;
-    private readonly IJwtService _jwtService;
     private readonly IUserContextService _userContextService;
 
     public AuctionService(BiddingSystemContext context, IItemService itemService, IBiddingService biddingService,
-        IUsersService userService, INotificationService notificationService, IJwtService jwtService,
+        IUsersService userService, INotificationService notificationService,
         IUserContextService userContextService)
     {
         _context = context;
@@ -27,7 +26,6 @@ public class AuctionService : IAuctionService
         _biddingService = biddingService;
         _userService = userService;
         _notificationService = notificationService;
-        _jwtService = jwtService;
         _userContextService = userContextService;
     }
 
