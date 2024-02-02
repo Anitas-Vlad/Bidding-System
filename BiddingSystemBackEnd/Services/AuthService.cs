@@ -18,11 +18,8 @@ public class AuthService : IAuthService
     {
         var userFromDb = await _usersService.QueryUserByEmail(request.Email);
         
-        if (userFromDb == null) 
-            throw new ArgumentException("User not found.");
-        
-        if (!BCrypt.Net.BCrypt.Verify(request.Password, userFromDb.PasswordHash))
-            throw new ArgumentException("Wrong password.");
+        if (userFromDb == null || !BCrypt.Net.BCrypt.Verify(request.Password, userFromDb.PasswordHash)) 
+            throw new ArgumentException("Incorrect credentials.");
 
         var token = _jwtService.CreateToken(userFromDb);
 

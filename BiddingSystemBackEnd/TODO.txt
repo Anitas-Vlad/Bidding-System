@@ -17,11 +17,12 @@ TODO - MUST :
 ? --- Check into AuctionService.SetBiddingStatus(). Is it really needed?
     * Use the BidStatus.Cancelled Enum instead of removing it from the database for a better user history.
     * Verify if CancelBid() works properly.
-!!!!* CancelBid() somehow makes the frozen credit go negative.
+!!! * CancelBid() somehow makes the frozen credit go negative.
     *Verify if cancelling a losing bid works ok.
     *Verify if cancelling a winning bid works ok.
     * Notification for cancelling a bid.
     * Notification for when someone cancels their bid and yours becomes the winning one.
+!!! * Auction has Item and ItemId.
 
 TODO - DONE :
  

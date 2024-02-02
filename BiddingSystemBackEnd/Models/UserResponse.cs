@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BiddingSystem.Models;
 
-public class UserDto
+public class UserResponse
 {
     public int Id { get; set; }
     [Required] public string UserName { get; set; }

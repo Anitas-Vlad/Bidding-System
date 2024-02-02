@@ -192,52 +192,52 @@ public class BiddingSystemContext : DbContext
                 }
             );
 
-            modelBuilder.Entity<Auction>().HasData(
-                new Auction
-                {
-                    Id = 1000,
-                    ItemId = 1000,
-                    SellerId = 1000, // Seller 1
-                    EndOfAuction = DateTime.UtcNow.AddDays(100),
-                    StartingPrice = 100,
-                    CurrentPrice = 100,
-                    MinimumBidIncrement = 10,
-                    WinningBidId = 1000 // Bid Buyer 1
-                },
-                new Auction
-                {
-                    Id = 1001,
-                    ItemId = 1001,
-                    SellerId = 1000, // Seller 1
-                    EndOfAuction = DateTime.UtcNow.AddDays(90),
-                    StartingPrice = 150,
-                    CurrentPrice = 150,
-                    MinimumBidIncrement = 15,
-                    WinningBidId = 1001 // Bid Buyer 3
-                },
-                new Auction
-                {
-                    Id = 1002,
-                    ItemId = 1002,
-                    SellerId = 1000, // Seller 1
-                    EndOfAuction = DateTime.UtcNow.AddDays(100),
-                    StartingPrice = 200,
-                    CurrentPrice = 200,
-                    MinimumBidIncrement = 20,
-                    WinningBidId = 1002 // Bid Buyer 1
-                },
-                new Auction
-                {
-                    Id = 1003,
-                    ItemId = 1003,
-                    SellerId = 1000, // Seller 1
-                    EndOfAuction = DateTime.UtcNow.AddDays(100),
-                    StartingPrice = 200,
-                    CurrentPrice = 200,
-                    MinimumBidIncrement = 20,
-                    WinningBidId = 1002 // Bid Buyer 1
-                }
-            );
+            // modelBuilder.Entity<Auction>().HasData(
+            //     new Auction
+            //     {
+            //         Id = 1000,
+            //         ItemId = 1000,
+            //         SellerId = 1000, // Seller 1
+            //         EndOfAuction = DateTime.UtcNow.AddDays(100),
+            //         StartingPrice = 100,
+            //         CurrentPrice = 100,
+            //         MinimumBidIncrement = 10,
+            //         WinningBidId = 1000 // Bid Buyer 1
+            //     },
+            //     new Auction
+            //     {
+            //         Id = 1001,
+            //         ItemId = 1001,
+            //         SellerId = 1000, // Seller 1
+            //         EndOfAuction = DateTime.UtcNow.AddDays(90),
+            //         StartingPrice = 150,
+            //         CurrentPrice = 150,
+            //         MinimumBidIncrement = 15,
+            //         WinningBidId = 1001 // Bid Buyer 3
+            //     },
+            //     new Auction
+            //     {
+            //         Id = 1002,
+            //         ItemId = 1002,
+            //         SellerId = 1000, // Seller 1
+            //         EndOfAuction = DateTime.UtcNow.AddDays(100),
+            //         StartingPrice = 200,
+            //         CurrentPrice = 200,
+            //         MinimumBidIncrement = 20,
+            //         WinningBidId = 1002 // Bid Buyer 1
+            //     },
+            //     new Auction
+            //     {
+            //         Id = 1003,
+            //         ItemId = 1003,
+            //         SellerId = 1000, // Seller 1
+            //         EndOfAuction = DateTime.UtcNow.AddDays(100),
+            //         StartingPrice = 200,
+            //         CurrentPrice = 200,
+            //         MinimumBidIncrement = 20,
+            //         WinningBidId = 1002 // Bid Buyer 1
+            //     }
+            // );
 
             modelBuilder.Entity<Bid>().HasData(
                 new Bid

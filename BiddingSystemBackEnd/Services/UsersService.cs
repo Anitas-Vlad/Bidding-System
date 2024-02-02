@@ -40,8 +40,7 @@ public class UsersService : IUsersService
         return user;
     }
 
-    //TODO Do not include every information about the account. UserDto
-    private async Task<User?> QueryUserByUsername(string username)
+    private async Task<User> QueryUserByUsername(string username)
     {
         var user = await _context.Users
             .Include(user => user.Bids)
@@ -49,15 +48,17 @@ public class UsersService : IUsersService
             .Where(user => user.Username == username)
             .FirstOrDefaultAsync();
         
-        if (user == null) throw new ArgumentException("User not found.");
+        if (user == null) 
+            throw new ArgumentException("User not found.");
 
         return user;
     }
 
-    public async Task<UserDto> QueryUserProfile(string username)
+    public async Task<UserResponse> QueryUserProfile(string username)
     {
         var user = await QueryUserByUsername(username);
-        return _userMapper.Map(user);
+        var userResponse = _userMapper.Map(user);
+        return userResponse;
     }
 
     public async Task<User> QueryPersonalAccount()
@@ -113,7 +114,7 @@ public class UsersService : IUsersService
         return user;
     }
 
-    public async Task<User> AddItem(CreateItemRequest request)
+    public async Task<Item> AddItem(CreateItemRequest request)
     {
         var userId = _userContextService.GetUserId();
         var user = await QueryUserById(userId);
@@ -123,7 +124,7 @@ public class UsersService : IUsersService
         _context.Users.Update(user);
 
         await _context.SaveChangesAsync();
-        return user;
+        return item;
     }
 
     public async Task<double> AddCredit(AddCreditRequest request)
@@ -150,14 +151,14 @@ public class UsersService : IUsersService
     private async Task IsUsernameValid(string username)
     {
         if (await _context.Users.AnyAsync(user => user.Username == username))
-            throw new ArgumentException($"the username \"{username}\" is taken");
+            throw new ArgumentException($"the username \"{username}\" is taken.");
     }
 
     private static void IsPasswordValid(string userPassword)
     {
         if (!_passwordPattern.IsMatch(userPassword))
             throw new ArgumentException(
-                "Password must contain special characters, numbers, capital letters and be longer than 8 characters");
+                "Password must contain special characters, numbers, capital letters and be longer than 8 characters.");
     }
 
     public void CheckIfUserOwnsBid(Bid bid)

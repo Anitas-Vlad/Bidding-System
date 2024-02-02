@@ -19,7 +19,7 @@ public class ItemService : IItemService
     {
         var item = await _context.Items.Where(item => item.Id == itemId).SingleOrDefaultAsync();
         
-        if (item == null) throw new ArgumentException("Item not Found.");
+        if (item == null) throw new ArgumentException("Item not found.");
         
         return item;
     }

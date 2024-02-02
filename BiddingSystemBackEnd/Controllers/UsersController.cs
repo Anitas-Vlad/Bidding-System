@@ -22,7 +22,7 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Route("/User-{username}")]
-    public async Task<ActionResult<UserDto>> SearchUserProfile(string username)
+    public async Task<ActionResult<UserResponse>> SearchUserProfile(string username)
         => await _usersService.QueryUserProfile(username);
     
     [HttpGet]
@@ -36,6 +36,6 @@ public class UsersController : ControllerBase
 
     [HttpPost]
     [Route("/AddItem")]
-    public async Task<ActionResult<User>> AddItem(CreateItemRequest request)
+    public async Task<ActionResult<Item>> AddItem(CreateItemRequest request)
         => await _usersService.AddItem(request);
 }

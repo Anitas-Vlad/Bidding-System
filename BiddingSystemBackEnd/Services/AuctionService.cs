@@ -170,7 +170,6 @@ public class AuctionService : IAuctionService
     {
         bid.Status = status;
         _context.Bids.Update(bid);
-        //TODO  await _context.SaveChangesAsync(); Check if needed.
     }
 
     private async Task UpdateDatabase(Auction auction, User user)

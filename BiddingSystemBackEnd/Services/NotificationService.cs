@@ -38,8 +38,9 @@ public class NotificationService : INotificationService
     {
         var notification = CreateBasicNotification(auction, user);
 
-        notification.Description = "Congratulations! You currently have the highest bid of " + auction.CurrentPrice +
-                                   " for the item: " + auction.GetItemName() + ".";
+        notification.Description =
+            $"Congratulations! You currently have the highest bid of {auction.CurrentPrice}" +
+            $" for the item: {auction.GetItemName()}.";
 
         user.ReceiveNotification(notification);
         _context.Notifications.Add(notification);
@@ -82,7 +83,7 @@ public class NotificationService : INotificationService
         _context.Notifications.Add(notification);
     }
 
-    public async Task HandleNotificationForLoser(Auction auction, Bid bid) //TODO the frozen amount
+    public async Task HandleNotificationForLoser(Auction auction, Bid bid)
     {
         var user = await _context.Users.FirstAsync(user => user.Id == bid.UserId);
         var notification = CreateBasicNotification(auction, user);

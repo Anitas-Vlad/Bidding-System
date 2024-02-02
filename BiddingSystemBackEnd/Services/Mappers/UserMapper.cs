@@ -5,7 +5,7 @@ namespace BiddingSystem.Services.Mappers;
 
 public class UserMapper : IUserMapper
 {
-    public UserDto Map(User user)
+    public UserResponse Map(User user)
         => new()
         {
             Id = user.Id,
@@ -14,6 +14,6 @@ public class UserMapper : IUserMapper
             UserName = user.Username
         };
 
-    public List<UserDto> Map(List<User> users) 
+    public List<UserResponse> Map(List<User> users) 
         => users.Select(user => Map(user)).ToList();
 }

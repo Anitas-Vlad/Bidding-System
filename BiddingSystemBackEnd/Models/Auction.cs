@@ -6,7 +6,7 @@ namespace BiddingSystem.Models;
 public class Auction
 {
     public int Id { get; set; }
-    public int ItemId { get; set; }
+    // public int ItemId { get; set; } //TODO needed for Database Seeding
     [Required] public Item Item { get; set; }
     [Required] public int SellerId { get; set; }
     [Required] public DateTime EndOfAuction { get; set; }
@@ -19,7 +19,7 @@ public class Auction
     [Required] public double MinimumBidIncrement { get; set; }
     public List<Bid> Bids { get; set; } = new();
 
-    public int? WinningBidId { get; set; }
+    public int WinningBidId { get; set; } = 0;
 
     public void AddBid(Bid bid)
     {
@@ -51,18 +51,6 @@ public class Auction
 
     public string GetItemName()
         => Item.Name;
-
-    public bool CheckIfBidToRemoveIsTheHighest(Bid bid)
-        => bid.Id == WinningBidId;
-
-    public void RemoveLosingBid(Bid bid) // TODO check if needed
-        => Bids.Remove(bid);
-
-    public Bid? RemoveWinningBid(Bid bid) // TODO check if needed
-    {
-        // Bids.Remove(bid); //TODO check if needed
-        return SetNewHighestBid();
-    }
 
     public double GetBidAmountByUserId(int userId) =>
         Bids.Where(bid => bid.UserId == userId)
