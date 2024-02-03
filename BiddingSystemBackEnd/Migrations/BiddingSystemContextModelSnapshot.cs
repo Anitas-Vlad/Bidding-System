@@ -17,7 +17,7 @@ namespace BiddingSystem.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "7.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -51,7 +51,7 @@ namespace BiddingSystem.Migrations
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("WinningBidId")
+                    b.Property<int>("WinningBidId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -61,52 +61,6 @@ namespace BiddingSystem.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Auctions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1000,
-                            CurrentPrice = 100.0,
-                            EndOfAuction = new DateTime(2024, 5, 10, 20, 41, 57, 650, DateTimeKind.Utc).AddTicks(2697),
-                            ItemId = 1000,
-                            MinimumBidIncrement = 10.0,
-                            SellerId = 1000,
-                            StartingPrice = 100.0,
-                            WinningBidId = 1000
-                        },
-                        new
-                        {
-                            Id = 1001,
-                            CurrentPrice = 150.0,
-                            EndOfAuction = new DateTime(2024, 4, 30, 20, 41, 57, 650, DateTimeKind.Utc).AddTicks(2708),
-                            ItemId = 1001,
-                            MinimumBidIncrement = 15.0,
-                            SellerId = 1000,
-                            StartingPrice = 150.0,
-                            WinningBidId = 1001
-                        },
-                        new
-                        {
-                            Id = 1002,
-                            CurrentPrice = 200.0,
-                            EndOfAuction = new DateTime(2024, 5, 10, 20, 41, 57, 650, DateTimeKind.Utc).AddTicks(2710),
-                            ItemId = 1002,
-                            MinimumBidIncrement = 20.0,
-                            SellerId = 1000,
-                            StartingPrice = 200.0,
-                            WinningBidId = 1002
-                        },
-                        new
-                        {
-                            Id = 1003,
-                            CurrentPrice = 200.0,
-                            EndOfAuction = new DateTime(2024, 5, 10, 20, 41, 57, 650, DateTimeKind.Utc).AddTicks(2711),
-                            ItemId = 1003,
-                            MinimumBidIncrement = 20.0,
-                            SellerId = 1000,
-                            StartingPrice = 200.0,
-                            WinningBidId = 1002
-                        });
                 });
 
             modelBuilder.Entity("BiddingSystem.Models.Bid", b =>
@@ -187,7 +141,10 @@ namespace BiddingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -202,42 +159,42 @@ namespace BiddingSystem.Migrations
                             Id = 1000,
                             AvailableForAuction = false,
                             Name = "Napoleon's Favorite Hat",
-                            UserId = 1000
+                            OwnerId = 1000
                         },
                         new
                         {
                             Id = 1001,
                             AvailableForAuction = false,
                             Name = "McDonald's Forever Free Nuggets",
-                            UserId = 1000
+                            OwnerId = 1000
                         },
                         new
                         {
                             Id = 1002,
                             AvailableForAuction = false,
                             Name = "Eiffel Tower Top Light",
-                            UserId = 1000
+                            OwnerId = 1000
                         },
                         new
                         {
                             Id = 1003,
                             AvailableForAuction = true,
                             Name = "Test Item 1",
-                            UserId = 1000
+                            OwnerId = 1000
                         },
                         new
                         {
                             Id = 1004,
                             AvailableForAuction = true,
                             Name = "Test Item 2",
-                            UserId = 1000
+                            OwnerId = 1000
                         },
                         new
                         {
                             Id = 1005,
                             AvailableForAuction = true,
                             Name = "Test Item 3",
-                            UserId = 1000
+                            OwnerId = 1000
                         });
                 });
 
@@ -310,7 +267,7 @@ namespace BiddingSystem.Migrations
                             Credit = 500.0,
                             Email = "seller1@gmail.com",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$CYcoJP22/Qr2j3D/QrpNze70NeUlqKp.K2oMoryqXCg2k/WzxO6Q.",
+                            PasswordHash = "$2a$11$CyOm1jdQUtxXMl20TJFF8.YA29Zsb8Zutz.gAk.pMwAJ0YsaLvK4C",
                             Username = "Seller 1"
                         },
                         new
@@ -319,7 +276,7 @@ namespace BiddingSystem.Migrations
                             Credit = 5000.0,
                             Email = "buyer1@gmail.com",
                             FrozenCredit = 220.0,
-                            PasswordHash = "$2a$11$lYLWpgw3Hh3MDc0NZ7UFJ.X./.sGPqPr51Uv78zWe4lYHA6wIcHlW",
+                            PasswordHash = "$2a$11$CAEU/gnjMcbRWtkagedmA.ZbbgZlYqIcivLUr/IPvOc/3zTn9M2qy",
                             Username = "Buyer 1"
                         },
                         new
@@ -328,7 +285,7 @@ namespace BiddingSystem.Migrations
                             Credit = 10000.0,
                             Email = "buyer2@gmail.com",
                             FrozenCredit = 220.0,
-                            PasswordHash = "$2a$11$JB.Eu0v/1Itl9WCyDrbeuO900/7PcPHidgQ6IR.F7daAGqtc4eJpq",
+                            PasswordHash = "$2a$11$8Jta5ryZbYShl.XO2CL4ieeWlMYoZaFKuLWZgCI12gq6fk93pqxAW",
                             Username = "Buyer 2"
                         },
                         new
@@ -337,7 +294,7 @@ namespace BiddingSystem.Migrations
                             Credit = 1500.0,
                             Email = "buyer3@gmail.com",
                             FrozenCredit = 170.0,
-                            PasswordHash = "$2a$11$aqceb0ttLKAzayY82HfTB.yTCwH8hVR5v.9lxYGnD8wNIFai.EXmW",
+                            PasswordHash = "$2a$11$y7tnRbi1m/DvhdxVtni.pO5fXWqiO.JPAwpEPuX2S61Y8r7OVbbuK",
                             Username = "Buyer 3"
                         },
                         new
@@ -346,7 +303,7 @@ namespace BiddingSystem.Migrations
                             Credit = 0.0,
                             Email = "owner@gmail.com",
                             FrozenCredit = 0.0,
-                            PasswordHash = "$2a$11$zBzOUdQOwC1Ly03MD/DlsueOjzUdHvzjPPnLytByVjXRcsNrSQjf2",
+                            PasswordHash = "$2a$11$/MLvxBRbwj6g.67xXyS0hem9SQTFncyoPA/8DTvVA0kpaKhF7axLm",
                             Username = "Owner"
                         });
                 });
@@ -385,9 +342,7 @@ namespace BiddingSystem.Migrations
                 {
                     b.HasOne("BiddingSystem.Models.User", null)
                         .WithMany("Items")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("BiddingSystem.Models.Notification", b =>
