@@ -5,18 +5,18 @@ namespace BiddingSystem.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IUsersService _usersService;
+    private readonly IUserService _userService;
     private readonly IJwtService _jwtService;
 
-    public AuthService(IUsersService usersService, IJwtService jwtService)
+    public AuthService(IUserService userService, IJwtService jwtService)
     {
-        _usersService = usersService;
+        _userService = userService;
         _jwtService = jwtService;
     }
 
     public async Task<string> Login(LoginRequest request)
     {
-        var userFromDb = await _usersService.QueryUserByEmail(request.Email);
+        var userFromDb = await _userService.QueryUserByEmail(request.Email);
         
         if (userFromDb == null || !BCrypt.Net.BCrypt.Verify(request.Password, userFromDb.PasswordHash)) 
             throw new ArgumentException("Incorrect credentials.");

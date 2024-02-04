@@ -11,31 +11,31 @@ namespace BiddingSystem.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly IUsersService _usersService;
+    private readonly IUserService _userService;
 
-    public UsersController(IUsersService usersService) => _usersService = usersService;
+    public UsersController(IUserService userService) => _userService = userService;
 
     [HttpGet]
     [Route("/PersonalAccount")]
     public async Task<ActionResult<User>> GetPersonalAccount() 
-        => await _usersService.QueryPersonalAccount();
+        => await _userService.QueryPersonalAccount();
 
     [HttpGet]
     [Route("/User-{username}")]
     public async Task<ActionResult<UserResponse>> SearchUserProfile(string username)
-        => await _usersService.QueryUserProfile(username);
+        => await _userService.QueryUserProfile(username);
     
     [HttpGet]
     public async Task<ActionResult<List<User>>> GetAllUsers() 
-        => await _usersService.QueryAllUsers();
+        => await _userService.QueryAllUsers();
 
     [HttpPatch]
     [Route("/AddCredit")]
     public async Task<ActionResult<double>> AddCreditToUser(AddCreditRequest request) 
-        => await _usersService.AddCredit(request);
+        => await _userService.AddCredit(request);
 
     [HttpPost]
     [Route("/AddItem")]
     public async Task<ActionResult<Item>> AddItem(CreateItemRequest request)
-        => await _usersService.AddItem(request);
+        => await _userService.AddItem(request);
 }

@@ -13,12 +13,12 @@ public class AuctionService : IAuctionService
     private readonly BiddingSystemContext _context;
     private readonly IItemService _itemService;
     private readonly IBiddingService _biddingService;
-    private readonly IUsersService _userService;
+    private readonly IUserService _userService;
     private readonly INotificationService _notificationService;
     private readonly IUserContextService _userContextService;
 
     public AuctionService(BiddingSystemContext context, IItemService itemService, IBiddingService biddingService,
-        IUsersService userService, INotificationService notificationService,
+        IUserService userService, INotificationService notificationService,
         IUserContextService userContextService)
     {
         _context = context;

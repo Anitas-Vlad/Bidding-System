@@ -3,7 +3,7 @@ using BiddingSystem.Models.Requests;
 
 namespace BiddingSystem.Services.Interfaces;
 
-public interface IUsersService
+public interface IUserService
 {
     Task<User> QueryUserById(int userId);
     Task<UserResponse> QueryUserProfile(string username);

@@ -16,7 +16,7 @@ public class UserServiceTests
     private readonly DbContextOptions<BiddingSystemContext> _options;
     private readonly BiddingSystemContext _context;
 
-    private readonly UsersService _usersService;
+    private readonly UserService _userService;
 
     private static Regex _mailPattern;
     private static Regex _passwordPattern;
@@ -72,7 +72,7 @@ public class UserServiceTests
         mockHttpContextAccessor.SetupGet(accessor => accessor.HttpContext.User).Returns(principal);
 
         // Create the instance of UserService with mocked dependencies
-        _usersService = new UsersService(
+        _userService = new UserService(
             _context,
             mockItemService.Object,
             mockUserContextService.Object, // Use the mocked IUserContextService
@@ -85,7 +85,7 @@ public class UserServiceTests
     {
         var userId = 1000;
 
-        var user = await _usersService.QueryUserById(userId);
+        var user = await _userService.QueryUserById(userId);
 
         Assert.NotNull(user);
         Assert.Equal("Seller 1", user.Username);
@@ -96,7 +96,7 @@ public class UserServiceTests
     {
         var userId = 853273;
 
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() => _usersService.QueryUserById(userId));
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() => _userService.QueryUserById(userId));
 
         Assert.Equal("User not found.", exception.Message);
     }
@@ -104,7 +104,7 @@ public class UserServiceTests
     [Fact]
     public async void ShouldReturn_Users()
     {
-        var users = await _usersService.QueryAllUsers();
+        var users = await _userService.QueryAllUsers();
 
         Assert.NotNull(users);
         Assert.NotEmpty(users);
@@ -115,7 +115,7 @@ public class UserServiceTests
     {
         var userEmail = "buyer1@gmail.com";
 
-        var user = await _usersService.QueryUserByEmail(userEmail);
+        var user = await _userService.QueryUserByEmail(userEmail);
 
         Assert.NotNull(user);
         Assert.Equal("Buyer 1", user.Username);
@@ -124,7 +124,7 @@ public class UserServiceTests
     [Fact]
     public async void ShouldReturn_Owner()
     {
-        var owner = await _usersService.QueryOwner();
+        var owner = await _userService.QueryOwner();
 
         Assert.NotNull(owner);
         Assert.Equal("Owner", owner.Username);
@@ -163,7 +163,7 @@ public class UserServiceTests
     [Fact]
     public async void ShouldReturn_PersonalAccount()
     {
-        var user = await _usersService.QueryPersonalAccount();
+        var user = await _userService.QueryPersonalAccount();
 
         Assert.NotNull(user);
         Assert.Equal("Buyer 1", user.Username);
@@ -172,7 +172,7 @@ public class UserServiceTests
     // [Fact]
     public async void ShouldThrow_UserNotFound()
     {
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() => _usersService.QueryPersonalAccount());
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() => _userService.QueryPersonalAccount());
 
         Assert.Equal("User not found.", exception.Message);
     }
@@ -181,10 +181,10 @@ public class UserServiceTests
     public async void ShouldAddItemToUser()
     {
         var request = new CreateItemRequest { Name = "Test item" };
-        var user = await _usersService.QueryPersonalAccount();
+        var user = await _userService.QueryPersonalAccount();
         var items = _context.Items;
 
-        var item = await _usersService.AddItem(request);
+        var item = await _userService.AddItem(request);
 
         Assert.NotNull(item);
         // Assert.Equal(7, items.Count());

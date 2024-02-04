@@ -11,8 +11,6 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 // if (builder.Environment.IsDevelopment())
 // {
 //     // Use in-memory database for testing
@@ -34,7 +32,7 @@ builder.Services.AddHangfire(config =>
                                    "Connection string 'bidding-system-context' not found.")));
 builder.Services.AddHangfireServer();
 
-builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuctionService, AuctionService>();
 builder.Services.AddScoped<IBiddingService, BiddingService>();
@@ -65,24 +63,20 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
 
-    // Describe your security scheme for JWT
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        // Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
 
-    // Use the "Bearer" scheme from the above definition
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -101,7 +95,6 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

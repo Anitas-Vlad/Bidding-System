@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BiddingSystem.Services;
 
-public class UsersService : IUsersService
+public class UserService : IUserService
 {
     private readonly BiddingSystemContext _context;
     private static Regex _mailPattern;
@@ -16,7 +16,7 @@ public class UsersService : IUsersService
     private readonly IUserContextService _userContextService;
     private readonly IUserMapper _userMapper;
 
-    public UsersService(BiddingSystemContext context, IItemService itemService,
+    public UserService(BiddingSystemContext context, IItemService itemService,
         IUserContextService userContextService, IUserMapper userMapper)
     {
         _context = context;

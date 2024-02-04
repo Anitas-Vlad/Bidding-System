@@ -9,14 +9,14 @@ public class NotificationService : INotificationService
 {
     private readonly BiddingSystemContext _context;
     private readonly IUserContextService _userContextService;
-    private readonly IUsersService _usersService;
+    private readonly IUserService _userService;
 
     public NotificationService(BiddingSystemContext context, IUserContextService userContextService,
-        IUsersService usersService)
+        IUserService userService)
     {
         _context = context;
         _userContextService = userContextService;
-        _usersService = usersService;
+        _userService = userService;
     }
     
     public async Task<List<Notification>> QueryProfileNotifications()
@@ -118,7 +118,7 @@ public class NotificationService : INotificationService
 
     public async Task HandleNotificationForAppOwner(Auction auction, double taxes)
     {
-        var owner = await _usersService.QueryOwner();
+        var owner = await _userService.QueryOwner();
         var notification = CreateBasicNotification(auction, owner);
 
         notification.Description =

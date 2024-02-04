@@ -9,19 +9,19 @@ namespace BiddingSystem.Controllers;
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IUsersService _usersService;
+    private readonly IUserService _userService;
     private readonly IAuthService _authService;
 
-    public AuthController(IUsersService usersService, IAuthService authService)
+    public AuthController(IUserService userService, IAuthService authService)
     {
-        _usersService = usersService;
+        _userService = userService;
         _authService = authService;
     }
 
     [HttpPost]
     [Route("/Register")]
     public async Task<ActionResult<User>> Register(RegisterRequest request)
-        => await _usersService.CreateUser(request);
+        => await _userService.CreateUser(request);
 
     [HttpPost]
     [Route("/Login")]

@@ -17,7 +17,7 @@ public class AuctionServiceTests : IDisposable
 
     private readonly IItemService _mockItemService;
     private readonly IBiddingService _mockBiddingService;
-    private readonly IUsersService _mockUserService;
+    private readonly IUserService _mockUserService;
     private readonly INotificationService _mockNotificationService;
     private readonly DataSeeder _dataSeeder = new();
 
@@ -34,7 +34,7 @@ public class AuctionServiceTests : IDisposable
         
         _mockItemService = new Mock<IItemService>().Object;
         _mockBiddingService = new Mock<IBiddingService>().Object;
-        _mockUserService = new Mock<IUsersService>().Object;
+        _mockUserService = new Mock<IUserService>().Object;
         _mockNotificationService = new Mock<INotificationService>().Object;
 
         // Mock IUserContextService to return a user ID

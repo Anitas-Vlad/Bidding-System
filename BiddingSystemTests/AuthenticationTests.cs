@@ -9,14 +9,14 @@ public class AuthenticationTests
 {
     private readonly AuthService _authService;
 
-    private readonly IUsersService _mockUsersService;
+    private readonly IUserService _mockUserService;
     private readonly IJwtService _mockJwtService;
 
     public AuthenticationTests()
     {
-        _mockUsersService = new Mock<IUsersService>().Object;
+        _mockUserService = new Mock<IUserService>().Object;
         _mockJwtService = new Mock<IJwtService>().Object;
-        _authService = new AuthService(_mockUsersService, _mockJwtService);
+        _authService = new AuthService(_mockUserService, _mockJwtService);
     }
     
     [Fact]
